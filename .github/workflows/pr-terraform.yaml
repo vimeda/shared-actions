@@ -1,0 +1,162 @@
+on:
+  workflow_call:
+    inputs:
+      role_name:
+        required: true
+        type: string
+      role_session_name:
+        required: true
+        type: string
+      aws_region:
+        required: true
+        type: string
+      working_directory:
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+  statuses: write
+
+jobs:
+  terraform:
+    name: Terraform
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        id: aws
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ inputs.role_name }}
+          role-session-name: ${{ inputs.role_session_name }}
+          aws-region: ${{ inputs.aws_region }}
+
+      - name: Download Staging Variables
+        uses: actions/download-artifact@v3
+        with:
+          name: staging-variables
+          path: ${{ inputs.working_directory }}
+
+      - name: Download Prod Variables
+        uses: actions/download-artifact@v3
+        with:
+          name: prod-variables
+          path: ${{ inputs.working_directory }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ~1.0
+
+      - name: Terraform Format
+        id: fmt
+        run: terraform fmt -check
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Staging Plan
+        id: plan-staging
+        run: terraform plan -no-color -var-file=staging.tfvars.json
+        env:
+          TF_WORKSPACE: staging
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Terraform Prod Plan
+        id: plan-prod
+        run: terraform plan -no-color -var-file=prod.tfvars.json
+        env:
+          TF_WORKSPACE: prod
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
+        env:
+          PLAN_STAGING: "terraform\n${{ steps.plan-staging.outputs.stdout }}"
+          PLAN_PROD: "terraform\n${{ steps.plan-prod.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // 1. Retrieve existing bot comments for the PR
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            })
+            const botComment = comments.find(comment => {
+              return comment.user.type === 'Bot' && comment.body.includes('Terraform Format and Style')
+            })
+
+            // 2. Prepare format of the comment
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+            <details><summary>Validation Output</summary>
+
+            \`\`\`\n
+            ${{ steps.validate.outputs.stdout }}
+            \`\`\`
+
+            </details>
+
+            #### Terraform Staging Plan 📖\`${{ steps.plan-staging.outcome }}\`
+            
+            <details><summary>Show Staging Plan</summary>
+            
+            \`\`\`\n
+            ${process.env.PLAN_STAGING}
+            \`\`\`
+            
+            </details>
+
+            #### Terraform Prod Plan 📖\`${{ steps.plan-prod.outcome }}\`
+            
+            <details><summary>Show Prod Plan</summary>
+            
+            \`\`\`\n
+            ${process.env.PLAN_PROD}
+            \`\`\`
+            
+            </details>
+            
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
+            
+            // 3. If we have a comment, update it, otherwise create a new one
+            if (botComment) {
+              github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: output
+              })
+            } else {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: output
+              })
+            }
+
+      - name: Terraform Staging Plan Status
+        if: steps.plan-staging.outcome == 'failure'
+        run: exit 1
+
+      - name: Terraform Prod Plan Status
+        if: steps.plan-prod.outcome == 'failure'
+        run: exit 1
