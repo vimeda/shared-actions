@@ -51,9 +51,6 @@ jobs:
         flavor: |
           latest=false
         tags: |
-          type=semver,pattern={{version}}
-          type=semver,pattern={{major}}.{{minor}}
-          type=semver,pattern={{major}}
           type=sha,event=branch,format=long,prefix=${{ inputs.docker_image_prefix }}
 
     - name: Login to ECR
