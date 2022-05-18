@@ -1,7 +1,7 @@
 on:
   workflow_call:
     inputs:
-      role_to_assume:
+      role_name:
         required: true
         type: string
       role_session_name:
@@ -43,7 +43,7 @@ jobs:
         id: aws
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: ${{ inputs.role_to_assume }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ inputs.role_name }}
           role-session-name: ${{ inputs.role_session_name }}
           aws-region: ${{ inputs.aws_region }}
 
