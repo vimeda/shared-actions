@@ -56,7 +56,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: staging-variables
-          path: staging.tfvars.json
+          path: .
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
