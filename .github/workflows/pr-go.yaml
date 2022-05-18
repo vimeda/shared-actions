@@ -28,7 +28,7 @@ jobs:
       # Run Linter against code base #
       ################################
       - name: Lint Code Base
-        uses: github/super-linter@v4
+        uses: github/super-linter/slim@v4
         env:
           GOPRIVATE: input.go_private
           DEFAULT_BRANCH: input.main_branch
