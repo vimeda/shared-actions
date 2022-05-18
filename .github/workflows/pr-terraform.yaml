@@ -48,11 +48,11 @@ jobs:
           aws-region: ${{ inputs.aws_region }}
 
       - name: Create Staging TF VARS file
-        run: 'echo "${{ inputs.staging_terraform_variables }}" > staging.tfvars'
+        run: 'echo "${{ inputs.staging_terraform_variables }}" > staging.tfvars.json'
         shell: bash
 
       - name: Create Prod TF VARS file
-        run: 'echo "${{ inputs.prod_terraform_variables }}" > prod.tfvars'
+        run: 'echo "${{ inputs.prod_terraform_variables }}" > prod.tfvars.json'
         shell: bash
 
       - name: Setup Terraform
