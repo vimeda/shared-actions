@@ -152,3 +152,11 @@ jobs:
                 body: output
               })
             }
+
+      - name: Terraform Staging Plan Status
+        if: steps.plan-staging.outcome == 'failure'
+        run: exit 1
+
+      - name: Terraform Prod Plan Status
+        if: steps.plan-prod.outcome == 'failure'
+        run: exit 1
