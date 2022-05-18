@@ -13,9 +13,6 @@ on:
       working_directory:
         required: true
         type: string
-      staging_terraform_variables:
-        required: true
-        type: string
       prod_terraform_variables:
         required: true
         type: string
@@ -48,7 +45,7 @@ jobs:
           aws-region: ${{ inputs.aws_region }}
 
       - name: Create Staging TF VARS file
-        run: 'echo ''${{ inputs.staging_terraform_variables }}'' > staging.tfvars.json'
+        run: 'echo ''${{ secrets.STAGING_TFVARS_JSON }}'' > staging.tfvars.json'
         shell: bash
 
       - name: Create Prod TF VARS file
