@@ -1,0 +1,96 @@
+on:
+  workflow_call:
+    inputs:
+      go_private:
+        required: true
+        type: string
+      role_name:
+        required: true
+        type: string
+      role_session_name:
+        required: true
+        type: string
+      aws_region:
+        required: true
+        type: string
+      ecr_repo_name:
+        required: true
+        type: string
+      docker_image_prefix:
+        required: true
+        type: string
+        default: ""
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+  statuses: write
+
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Configure AWS Credentials
+      id: aws
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ inputs.role_name }}
+        role-session-name: ${{ inputs.role_session_name }}
+        aws-region: ${{ inputs.aws_region }}
+
+    - name: Docker meta Service
+      id: metadata-srv
+      uses: docker/metadata-action@v4
+      with:
+        images: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.eu-central-1.amazonaws.com/lykon/${{ inputs.ecr_repo_name }}
+        flavor: |
+          latest=false
+        tags: |
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=semver,pattern={{major}}
+          type=sha,event=branch,format=long,prefix=${{ inputs.docker_image_prefix }}
+
+    - name: Login to ECR
+      id: ecr
+      uses: aws-actions/amazon-ecr-login@v1
+      with:
+        registries: ${{ secrets.AWS_ACCOUNT_ID }}
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Cache Docker layers
+      uses: actions/cache@v3.0.2
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-single-buildx-gdpr-deleter-srv
+        restore-keys: |
+          ${{ runner.os }}-single-buildx
+
+    - name: Build and push application
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: ${{ steps.metadata-srv.outputs.tags }}
+        build-args: |
+          GITHUB_TOKEN=${{ secrets.GB_TOKEN_PRIVATE }}
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache-new
+      env:
+        VERSION: ${{ github.sha }}
+
+      # Temp fix
+      # https://github.com/docker/build-push-action/issues/252
+      # https://github.com/moby/buildkit/issues/1896
+    - name: Move cache
+      run: |
+        rm -rf /tmp/.buildx-cache
+        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
