@@ -52,6 +52,13 @@ jobs:
         run: 'echo ''${{ inputs.prod_terraform_variables }}'' > prod.tfvars.json'
         shell: bash
 
+      - name: Archive staging artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: staging-variables
+          path: |
+            ./staging.tfvars.json
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
