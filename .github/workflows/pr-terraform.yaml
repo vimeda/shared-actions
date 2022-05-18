@@ -13,9 +13,6 @@ on:
       working_directory:
         required: true
         type: string
-      prod_terraform_variables:
-        required: true
-        type: string
 
 permissions:
   id-token: write
@@ -44,19 +41,17 @@ jobs:
           role-session-name: ${{ inputs.role_session_name }}
           aws-region: ${{ inputs.aws_region }}
 
-      - name: Create Staging TF VARS file
-        run: 'echo ''${{ secrets.STAGING_TFVARS_JSON }}'' > staging.tfvars.json'
-        shell: bash
-
-      - name: Create Prod TF VARS file
-        run: 'echo ''${{ inputs.prod_terraform_variables }}'' > prod.tfvars.json'
-        shell: bash
-
-      - name: Archive staging artifacts
-        uses: actions/upload-artifact@v3
+      - name: Download Staging Variables
+        uses: actions/download-artifact@v3
         with:
           name: staging-variables
-          path: .
+          path: ${{ inputs.working_directory }}
+
+      - name: Download Prod Variables
+        uses: actions/download-artifact@v3
+        with:
+          name: prod-variables
+          path: ${{ inputs.working_directory }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
