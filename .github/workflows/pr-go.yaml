@@ -30,8 +30,8 @@ jobs:
       - name: Lint Code Base
         uses: github/super-linter/slim@v4
         env:
-          GOPRIVATE: input.go_private
-          DEFAULT_BRANCH: input.main_branch
+          GOPRIVATE: ${{ inputs.go_private }}
+          DEFAULT_BRANCH: ${{ inputs.main_branch }}
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_DOCKERFILE: true
           VALIDATE_TERRAFORM_TFLINT: true
