@@ -35,6 +35,7 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_DOCKERFILE: true
           VALIDATE_TERRAFORM_TFLINT: true
+          VALIDATE_GO: true
           GITHUB_TOKEN: ${{ secrets.GB_TOKEN_PRIVATE }}
 
   test:
