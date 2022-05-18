@@ -4,9 +4,6 @@ on:
       go_private:
         required: true
         type: string
-      main_branch:
-        required: true
-        type: string
 
 jobs:
   test:
