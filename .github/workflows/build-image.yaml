@@ -1,9 +1,6 @@
 on:
   workflow_call:
     inputs:
-      go_private:
-        required: true
-        type: string
       role_name:
         required: true
         type: string
@@ -16,8 +13,11 @@ on:
       ecr_repo_name:
         required: true
         type: string
-      docker_image_prefix:
+      docker_file_path:
         required: true
+        type: string
+      docker_image_prefix:
+        required: false
         type: string
         default: ""
 
@@ -77,7 +77,7 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         context: .
-        file: ./Dockerfile
+        file: ${{ inputs.docker_file_path }}
         push: true
         tags: ${{ steps.metadata-srv.outputs.tags }}
         build-args: |
