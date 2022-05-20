@@ -19,7 +19,7 @@ on:
       helm_values:
         required: true
         type: string
-      helm_value_files:
+      helm_values_files:
         required: true
         type: string
 
