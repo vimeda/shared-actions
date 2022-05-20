@@ -1,0 +1,64 @@
+on:
+  workflow_call:
+    inputs:
+      role_name:
+        required: true
+        type: string
+      role_session_name:
+        required: true
+        type: string
+      aws_region:
+        required: true
+        type: string
+      working_directory:
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+  statuses: write
+
+jobs:
+  terraform:
+    name: Terraform
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        id: aws
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ inputs.role_name }}
+          role-session-name: ${{ inputs.role_session_name }}
+          aws-region: ${{ inputs.aws_region }}
+
+      - name: Download Staging Variables
+        uses: actions/download-artifact@v3
+        with:
+          name: staging-variables
+          path: ${{ inputs.working_directory }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ~1.0
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Terraform Staging Apply
+        id: apply-staging
+        run: terraform apply -no-color -var-file=staging.tfvars.json
+        env:
+          TF_WORKSPACE: staging
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,68 @@
+on:
+  workflow_call:
+    inputs:
+      role_name:
+        required: true
+        type: string
+      role_session_name:
+        required: true
+        type: string
+      aws_region:
+        required: true
+        type: string
+      release_name:
+        required: true
+        type: string
+      namespace:
+        required: true
+        type: string
+      helm_values:
+        required: true
+        type: string
+      helm_value_files:
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+  statuses: write
+
+jobs:
+  publish:
+    name: Publish to Production
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v1
+
+    - name: Configure AWS Credentials
+      id: aws
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ inputs.role_name }}
+        role-session-name: ${{ inputs.role_session_name }}
+        aws-region: ${{ inputs.aws_region }}
+
+    - name: Deploy
+      uses: vimeda/helm@v1.6.8
+      with:
+        helm: helm3
+        chart: lykon-charts/lykon-service
+        chart-version: "0.10.4"
+        track: stable
+        version: ${{ github.sha }}
+        token: ${{ github.token }}
+        secrets: ${{ toJSON(secrets) }}
+        value-files: ${{ inputs.helm_value_files }}
+        repo: ${{ secrets.CHARTMUSEUM_REPO }}
+        repo-alias: lykon-charts
+        repo-username: ${{ secrets.CHARTMUSEUM_USERNAME }}
+        repo-password: ${{ secrets.CHARTMUSEUM_PASSWORD }}
+        release: ${{ inputs.release_name }}
+        namespace: ${{ inputs.namespace }}
+        values: ${{ inputs.helm_values }}
+      env:
+        KUBECONFIG_FILE: ${{ secrets.PROD_KUBECONFIG }}
