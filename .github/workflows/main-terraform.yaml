@@ -13,6 +13,9 @@ on:
       working_directory:
         required: true
         type: string
+      staging_tfvars_json:
+        required: true
+        type: string
 
 permissions:
   id-token: write
@@ -41,11 +44,8 @@ jobs:
           role-session-name: ${{ inputs.role_session_name }}
           aws-region: ${{ inputs.aws_region }}
 
-      - name: Download Staging Variables
-        uses: actions/download-artifact@v3
-        with:
-          name: staging-variables
-          path: ${{ inputs.working_directory }}
+      - name: Create Parameters file
+        run: echo '${{ inputs.staging_tfvars_json }}' > staging.tfvars.json
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2

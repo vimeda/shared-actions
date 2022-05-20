@@ -46,23 +46,27 @@ jobs:
         role-session-name: ${{ inputs.role_session_name }}
         aws-region: ${{ inputs.aws_region }}
 
+    - name: Create Parameters file
+      run: echo '${{ inputs.helm_values }}' > parameters.json
+
     - name: Deploy
       uses: vimeda/helm@v1.6.8
       with:
         helm: helm3
         chart: lykon-charts/lykon-service
-        chart-version: "0.10.4"
+        chart-version: "0.10.1"
         track: stable
         version: ${{ github.sha }}
         token: ${{ github.token }}
         secrets: ${{ toJSON(secrets) }}
-        value-files: ${{ inputs.helm_value_files }}
+        value-files: '[
+          ${{ inputs.helm_values_files }},
+          "./parameters.json"]'
         repo: ${{ secrets.CHARTMUSEUM_REPO }}
         repo-alias: lykon-charts
         repo-username: ${{ secrets.CHARTMUSEUM_USERNAME }}
         repo-password: ${{ secrets.CHARTMUSEUM_PASSWORD }}
         release: ${{ inputs.release_name }}
         namespace: ${{ inputs.namespace }}
-        values: ${{ inputs.helm_values }}
       env:
         KUBECONFIG_FILE: ${{ secrets.STAGING_KUBECONFIG }}

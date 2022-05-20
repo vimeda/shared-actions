@@ -13,6 +13,9 @@ on:
       working_directory:
         required: true
         type: string
+      prod_tfvars_json:
+        required: true
+        type: string
 
 permissions:
   id-token: write
@@ -41,11 +44,8 @@ jobs:
           role-session-name: ${{ inputs.role_session_name }}
           aws-region: ${{ inputs.aws_region }}
 
-      - name: Download Prod Variables
-        uses: actions/download-artifact@v3
-        with:
-          name: prod-variables
-          path: ${{ inputs.working_directory }}
+      - name: Create Parameters file
+        run: echo '${{ inputs.prod_tfvars_json }}' > prod.tfvars.json
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -60,5 +60,5 @@ jobs:
         id: apply-prod
         run: terraform apply -no-color -var-file=prod.tfvars.json
         env:
-          TF_WORKSPACE: staging
+          TF_WORKSPACE: prod
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
