@@ -7,7 +7,6 @@ on:
       main_branch:
         required: true
         type: string
-    secrets: inherit
 
 jobs:
   linter:

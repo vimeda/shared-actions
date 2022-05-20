@@ -4,7 +4,6 @@ on:
       go_private:
         required: true
         type: string
-    secrets: inherit
 
 jobs:
   test:
