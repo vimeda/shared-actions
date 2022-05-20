@@ -16,6 +16,7 @@ on:
       staging_tfvars_json:
         required: true
         type: string
+    secrets: inherit
 
 permissions:
   id-token: write
