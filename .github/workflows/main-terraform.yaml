@@ -44,8 +44,11 @@ jobs:
           role-session-name: ${{ inputs.role_session_name }}
           aws-region: ${{ inputs.aws_region }}
 
-      - name: Create Parameters file
-        run: echo '${{ inputs.staging_tfvars_json }}' > staging.tfvars.json
+      - name: Download Staging Variables
+        uses: actions/download-artifact@v3
+        with:
+          name: staging-variables
+          path: ${{ inputs.working_directory }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -58,7 +61,7 @@ jobs:
 
       - name: Terraform Staging Apply
         id: apply-staging
-        run: terraform apply -no-color -var-file=staging.tfvars.json
+        run: terraform apply -auto-approve -input=false -var-file=staging.tfvars.json
         env:
           TF_WORKSPACE: staging
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
