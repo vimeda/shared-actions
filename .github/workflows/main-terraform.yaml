@@ -61,7 +61,7 @@ jobs:
 
       - name: Terraform Staging Apply
         id: apply-staging
-        run: terraform apply -no-color -var-file=staging.tfvars.json
+        run: terraform apply -auto-approve -input=false -var-file=staging.tfvars.json
         env:
           TF_WORKSPACE: staging
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
