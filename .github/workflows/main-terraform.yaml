@@ -13,9 +13,6 @@ on:
       working_directory:
         required: true
         type: string
-      staging_tfvars_json:
-        required: true
-        type: string
 
 permissions:
   id-token: write
@@ -62,6 +59,7 @@ jobs:
       - name: Terraform Staging Apply
         id: apply-staging
         run: terraform apply -auto-approve -input=false -var-file=staging.tfvars.json
+        timeout-minutes: 15
         env:
           TF_WORKSPACE: staging
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
