@@ -33,6 +33,7 @@ jobs:
   publish:
     name: Publish to Staging
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
     - name: Checkout code
@@ -54,7 +55,7 @@ jobs:
       with:
         helm: helm3
         chart: lykon-charts/lykon-service
-        chart-version: "0.10.7"
+        chart-version: "0.10.8"
         track: stable
         version: ${{ github.sha }}
         token: ${{ github.token }}
