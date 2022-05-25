@@ -1,8 +1,11 @@
 name: Renovate
 
 on:
-  schedule:
-    - cron: '0 10 * * 1'
+  workflow_call:
+    inputs:
+      renovate_file_path:
+        required: true
+        type: string
 
 jobs:
   renovate:
@@ -14,7 +17,7 @@ jobs:
       - name: Self-hosted Renovate
         uses: renovatebot/github-action@v32.66.1
         with:
-          configurationFile: renovate.json
+          configurationFile: ${{ inputs.renovate_file_path }}
           token: ${{ secrets.GB_TOKEN_PRIVATE }}
         env:
           LOG_LEVEL: 'debug'
