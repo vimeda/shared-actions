@@ -5,6 +5,10 @@ on:
         required: false
         type: string
         default: grpc
+      make_test_goal:
+        required: false
+        default: test
+        type: string
 
 jobs:
   test:
@@ -43,4 +47,4 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GB_TOKEN_PRIVATE }}
 
     - name: Test
-      run: make test
+      run: make ${{ inputs.make_test_goal }}
