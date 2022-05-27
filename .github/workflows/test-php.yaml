@@ -43,4 +43,4 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GB_TOKEN_PRIVATE }}
 
     - name: Test
-      run: ./vendor/bin/phpunit
+      run: make test
