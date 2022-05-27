@@ -6,7 +6,7 @@ on:
         type: string
         default: grpc
       make_test_goal:
-        required: true
+        required: false
         default: test
         type: string
 
