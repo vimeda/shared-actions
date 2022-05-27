@@ -36,5 +36,29 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_DOCKERFILE: true
           VALIDATE_TERRAFORM_TFLINT: true
-          VALIDATE_GO: true
+          GITHUB_TOKEN: ${{ secrets.GB_TOKEN_PRIVATE }}
+
+  golang:
+    name: Lint Golang files
+    runs-on: ubuntu-18.04
+
+    steps:
+      - name: Setup go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.18.x
+
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Configure git for private modules
+        env:
+          TOKEN: ${{ secrets.GB_TOKEN_PRIVATE }}
+        run: git config --global url."https://${TOKEN}:x-oauth-basic@github.com/vimeda".insteadOf "https://github.com/vimeda"
+
+      - name: Linter
+        uses: golangci/golangci-lint-action@v2
+        with:
+          args: -c ./.github/linters/.golangci.yaml
+        env:
           GITHUB_TOKEN: ${{ secrets.GB_TOKEN_PRIVATE }}
