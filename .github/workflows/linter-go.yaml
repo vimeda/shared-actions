@@ -1,12 +1,10 @@
 on:
   workflow_call:
     inputs:
-      go_private:
-        required: true
-        type: string
       main_branch:
-        required: true
+        required: false
         type: string
+        default: main
 
 jobs:
   linter:
@@ -31,7 +29,7 @@ jobs:
       - name: Lint Code Base
         uses: github/super-linter/slim@v4
         env:
-          GOPRIVATE: ${{ inputs.go_private }}
+          GOPRIVATE: github.com/vimeda/*
           DEFAULT_BRANCH: ${{ inputs.main_branch }}
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_DOCKERFILE: true
@@ -47,9 +45,9 @@ jobs:
 
     steps:
       - name: Setup go
-        uses: actions/setup-go@v1
+        uses: actions/setup-go@v3
         with:
-          go-version: 1.18.x
+          go-version: "^1.18.0"
 
       - name: Checkout Code
         uses: actions/checkout@v3
