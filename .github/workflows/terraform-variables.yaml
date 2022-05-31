@@ -4,10 +4,9 @@ on:
       env:
         required: true
         type: string
+    secrets:
       json:
         required: false
-        type: string
-        default: '{}'
 
 jobs:
   terraform-variables:
