@@ -1,9 +1,5 @@
 on:
   workflow_call:
-    inputs:
-      go_private:
-        required: true
-        type: string
 
 jobs:
   test:

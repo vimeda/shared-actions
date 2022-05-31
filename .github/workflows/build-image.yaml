@@ -8,8 +8,9 @@ on:
         required: true
         type: string
       aws_region:
-        required: true
+        required: false
         type: string
+        default: eu-central-1
       ecr_repo_name:
         required: true
         type: string
