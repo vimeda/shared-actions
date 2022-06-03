@@ -21,7 +21,7 @@ on:
         required: false
         type: string
         default: ""
-      docker_makefile_lambda_command:
+      build_args:
         required: false
         type: string
         default: ""
@@ -85,7 +85,7 @@ jobs:
         tags: ${{ steps.metadata-srv.outputs.tags }}
         build-args: |
           GITHUB_TOKEN=${{ secrets.GB_TOKEN_PRIVATE }}
-          LAMBDA=${{ inputs.docker_makefile_lambda_command }}
+          ${{ inputs.build_args }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new
       env:
