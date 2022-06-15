@@ -1,16 +1,6 @@
 on:
   workflow_call:
     inputs:
-      role_name:
-        required: true
-        type: string
-      role_session_name:
-        required: true
-        type: string
-      aws_region:
-        required: false
-        type: string
-        default: eu-central-1
       entity_name:
         required: true
         type: string
@@ -42,9 +32,9 @@ jobs:
         id: aws
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ inputs.role_name }}
-          role-session-name: ${{ inputs.role_session_name }}
-          aws-region: ${{ inputs.aws_region }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-backstage-role
+          role-session-name: ga-backstage
+          aws-region: eu-central-1
 
       - name: Install techdocs-cli
         run: sudo npm install -g @techdocs/cli
