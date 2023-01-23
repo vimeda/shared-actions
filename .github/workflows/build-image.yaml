@@ -25,6 +25,10 @@ on:
         required: false
         type: string
         default: ""
+      provenance:
+        required: false
+        type: boolean
+        default: true
 
 permissions:
   id-token: write
@@ -88,6 +92,7 @@ jobs:
           ${{ inputs.build_args }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new
+        provenance: ${{ inputs.provenance }}
       env:
         VERSION: ${{ github.sha }}
 
