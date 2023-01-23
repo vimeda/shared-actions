@@ -83,6 +83,7 @@ jobs:
         file: ${{ inputs.docker_file_path }}
         push: true
         tags: ${{ steps.metadata-srv.outputs.tags }}
+        provenance: false
         build-args: |
           GITHUB_TOKEN=${{ secrets.GB_TOKEN_PRIVATE }}
           ${{ inputs.build_args }}
