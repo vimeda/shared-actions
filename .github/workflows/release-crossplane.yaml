@@ -45,6 +45,12 @@ jobs:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ inputs.role_name }}
           role-session-name: ${{ inputs.role_session_name }}
           aws-region: ${{ inputs.aws_region }}
+          
+      - uses: actions/download-artifact@v2
+        id: download
+        with:
+          name: order-srv-lambdas
+          path: dist
 
       - name: Display structure of downloaded files
         run: ls -R
