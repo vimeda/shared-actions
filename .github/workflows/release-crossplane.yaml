@@ -46,6 +46,10 @@ jobs:
           role-session-name: ${{ inputs.role_session_name }}
           aws-region: ${{ inputs.aws_region }}
 
+
+      - name: Ls
+        run: cd  ${{ github.workspace }}/dist && ls
+
       - name: Build lambdas
         run: make lambda
         env:
@@ -64,8 +68,6 @@ jobs:
           name: order-srv-lambdas
           path:  ${{ github.workspace }}/dist
 
-      - name: Ls
-        run: cd  ${{ github.workspace }}/dist && ls
 
 
       - name: Display structure of downloaded files
