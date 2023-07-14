@@ -45,7 +45,18 @@ jobs:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ inputs.role_name }}
           role-session-name: ${{ inputs.role_session_name }}
           aws-region: ${{ inputs.aws_region }}
-          
+      - name: Build lambdas
+        run: make lambda
+        env:
+          GITHUB_TOKEN: ${{ secrets.GB_TOKEN_PRIVATE }}
+          GOPRIVATE: "github.com/vimeda/*"
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: order-srv-lambdas
+          path: ${{ github.workspace }}/dist/*
+
       - uses: actions/download-artifact@v2
         id: download
         with:
