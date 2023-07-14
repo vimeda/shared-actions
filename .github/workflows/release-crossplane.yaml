@@ -47,7 +47,7 @@ jobs:
           aws-region: ${{ inputs.aws_region }}
 
       - name: List Dir
-        run: ls -al
+        run: cd home && ls
         env:
           GITHUB_TOKEN: ${{ secrets.GB_TOKEN_PRIVATE }}
           GOPRIVATE: "github.com/vimeda/*"
