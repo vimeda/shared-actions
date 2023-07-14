@@ -45,6 +45,13 @@ jobs:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ inputs.role_name }}
           role-session-name: ${{ inputs.role_session_name }}
           aws-region: ${{ inputs.aws_region }}
+
+      - name: List Dir
+        run: ls
+        env:
+          GITHUB_TOKEN: ${{ secrets.GB_TOKEN_PRIVATE }}
+          GOPRIVATE: "github.com/vimeda/*"
+
       - name: Build lambdas
         run: make lambda
         env:
