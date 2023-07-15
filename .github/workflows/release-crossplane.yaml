@@ -90,8 +90,8 @@ jobs:
       - name: Terraform plan
         id: plan
         run: |
-          echo "${{ secrets.STAGING_KUBECONFIG }}" > kubeconfig.yaml
-          export KUBECONFIG=$(pwd)/kubeconfig.yaml
+          echo "${{ secrets.STAGING_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
+          export KUBECONFIG=${{ github.workspace }}//kubeconfig.yaml
           terraform -chdir=${{ github.workspace }}/configs/crossplane/staging plan -input=false
         env:
           TF_WORKSPACE: staging
@@ -99,8 +99,8 @@ jobs:
       - name: Terraform apply
         id: apply
         run: |
-          echo "${{ secrets.STAGING_KUBECONFIG }}" > kubeconfig.yaml
-          export KUBECONFIG=$(pwd)/kubeconfig.yaml
+          echo "${{ secrets.STAGING_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
+          export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
           terraform -chdir=${{ github.workspace }}/configs/crossplane/staging apply -auto-approve -input=false
         env:
           TF_WORKSPACE: staging
