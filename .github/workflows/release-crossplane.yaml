@@ -38,8 +38,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Build lambdas
-        run: tree -L 1
 
 
 
@@ -54,12 +52,12 @@ jobs:
 #
 #      - name: Ls
 #        run: cd  ${{ github.workspace }}/dist && ls
-#
-#      - name: Build lambdas
-#        run: make lambda
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GB_TOKEN_PRIVATE }}
-#          GOPRIVATE: "github.com/vimeda/*"
+
+      - name: Build lambdas
+        run:  cd  ${{ github.workspace }} &&  make lambda
+        env:
+          GITHUB_TOKEN: ${{ secrets.GB_TOKEN_PRIVATE }}
+          GOPRIVATE: "github.com/vimeda/*"
 #
 #      - name: Upload Build Artifacts
 #        uses: actions/upload-artifact@v2
