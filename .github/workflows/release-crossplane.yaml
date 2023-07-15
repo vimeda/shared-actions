@@ -41,18 +41,19 @@ jobs:
 
 
 
-#      - name: Configure AWS Credentials
-#        id: aws
-#        uses: aws-actions/configure-aws-credentials@v1
-#        with:
-#          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ inputs.role_name }}
-#          role-session-name: ${{ inputs.role_session_name }}
-#          aws-region: ${{ inputs.aws_region }}
-#
-#
-#      - name: Ls
-#        run: cd  ${{ github.workspace }}/dist && ls
+      - name: Configure AWS Credentials
+        id: aws
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ inputs.role_name }}
+          role-session-name: ${{ inputs.role_session_name }}
+          aws-region: ${{ inputs.aws_region }}
 
+      - name: Build lambdas
+        run: cd  ${{ github.workspace }} &&  make lambda
+        env:
+          GITHUB_TOKEN: ${{ secrets.GB_TOKEN_PRIVATE }}
+          GOPRIVATE: "github.com/vimeda/*"
 
 
       - name: Upload Build Artifacts
@@ -73,11 +74,7 @@ jobs:
         run: ls -R
         working-directory: ${{ steps.download.outputs.download-path }}
 
-      - name: Build lambdas
-        run: cd  ${{ github.workspace }} &&  make lambda
-        env:
-          GITHUB_TOKEN: ${{ secrets.GB_TOKEN_PRIVATE }}
-          GOPRIVATE: "github.com/vimeda/*"
+
 
       - name: Push function to Bucket
         run: cd   ${{ github.workspace }}/dist && aws s3 cp  ${{ inputs.function_name }}_lambda.zip s3://staging-lykon-lambdas/${{ inputs.function_name }}/function.zip
