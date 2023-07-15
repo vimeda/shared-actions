@@ -39,10 +39,8 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build lambdas
-        run: make lambda
-        env:
-          GITHUB_TOKEN: ${{ secrets.GB_TOKEN_PRIVATE }}
-          GOPRIVATE: "github.com/vimeda/*"
+        run: tree -L 3
+
 
 #      - name: Configure AWS Credentials
 #        id: aws
