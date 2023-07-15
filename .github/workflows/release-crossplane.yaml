@@ -38,9 +38,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-
-
-
       - name: Configure AWS Credentials
         id: aws
         uses: aws-actions/configure-aws-credentials@v1
@@ -55,7 +52,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GB_TOKEN_PRIVATE }}
           GOPRIVATE: "github.com/vimeda/*"
 
-
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -68,13 +64,9 @@ jobs:
           name: order-srv-lambdas
           path:  ${{ github.workspace }}/dist
 
-
-
       - name: Display structure of downloaded files
         run: ls -R
         working-directory: ${{ steps.download.outputs.download-path }}
-
-
 
       - name: Push function to Bucket
         run: cd   ${{ github.workspace }}/dist && aws s3 cp  ${{ inputs.function_name }}_lambda.zip s3://staging-lykon-lambdas/${{ inputs.function_name }}/function.zip
