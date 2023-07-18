@@ -89,7 +89,7 @@ jobs:
         run: terraform -chdir=${{ github.workspace }}/configs/crossplane/${{ inputs.env }} init
 
       - name: Cat File
-        id: apply
+        id: catfile
         run: |
           cat staging.tfvars.json
 
