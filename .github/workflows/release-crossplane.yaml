@@ -92,8 +92,6 @@ jobs:
         id: apply
         run: |
           cat staging.tfvars.json
-        env:
-          TF_WORKSPACE: ${{ inputs.env }}
 
       - name: Terraform apply
         id: apply
