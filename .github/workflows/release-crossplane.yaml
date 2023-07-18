@@ -91,11 +91,13 @@ jobs:
       - name: Cat File
         id: catfile
         run: |
+          pwd
           cat staging.tfvars.json
 
       - name: Terraform apply
         id: apply
         run: |
+          pwd
           echo "${{ secrets.STAGING_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
           terraform -chdir=${{ github.workspace }}/configs/crossplane/${{ inputs.env }} apply -auto-approve -input=false -var-file=staging.tfvars.json
