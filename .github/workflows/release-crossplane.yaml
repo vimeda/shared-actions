@@ -69,7 +69,7 @@ jobs:
         working-directory: ${{ steps.download.outputs.download-path }}
 
       - name: Push function to Bucket
-        run: cd   ${{ github.workspace }}/dist && aws s3 cp  ${{ inputs.function_name }}_lambda.zip s3://staging-lykon-lambdas/${{ inputs.function_name }}/function.zip
+        run: cd   ${{ github.workspace }}/dist && aws s3 cp  ${{ inputs.function_name }}_lambda.zip s3://${{ inputs.env }}-lykon-lambdas/${{ inputs.function_name }}/function.zip
 
       - uses: hashicorp/setup-terraform@v1
         with:
@@ -77,22 +77,13 @@ jobs:
 
       - name: Terraform Init
         id: init
-        run: terraform -chdir=${{ github.workspace }}/configs/crossplane/staging init
-
-      - name: Terraform plan
-        id: plan
-        run: |
-          echo "${{ secrets.STAGING_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
-          export KUBECONFIG=${{ github.workspace }}//kubeconfig.yaml
-          terraform -chdir=${{ github.workspace }}/configs/crossplane/staging plan -input=false
-        env:
-          TF_WORKSPACE: staging
+        run: terraform -chdir=${{ github.workspace }}/configs/crossplane/${{ inputs.env }} init
 
       - name: Terraform apply
         id: apply
         run: |
           echo "${{ secrets.STAGING_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
-          terraform -chdir=${{ github.workspace }}/configs/crossplane/staging apply -auto-approve -input=false
+          terraform -chdir=${{ github.workspace }}/configs/crossplane/${{ inputs.env }} apply -auto-approve -input=false
         env:
-          TF_WORKSPACE: staging
+          TF_WORKSPACE: ${{ inputs.env }}
