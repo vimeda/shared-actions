@@ -14,17 +14,21 @@ with open("../envs", "r") as env_file:
         ).strip()
         parameter_values[parameter] = value
 
-# Initialize YAML data with parameter values
-data = {
-    "envVariables": [{
-        "variables": {param: value for param, value in parameter_values.items()}
-    }]
-}
-
 # Specify the output file path
 output_file_path = "./envs.out"
 
-# Write the updated YAML to the new file "envs.out" (overwriting if it exists)
+# Write the parameter-value pairs as plain text to the new file "envs.out" (overwriting if it exists)
 with open(output_file_path, "w") as file:
-    yaml.dump(data, file)
+    for param, value in parameter_values.items():
+        file.write(f"{param}: {value}\n")
 
+# Store the value in a YAML file
+yaml_data = {
+    "envVariables": [
+        {"variables": parameter_values}
+    ]
+}
+
+# Write the YAML data to the "envs.out" file in YAML format
+with open(output_file_path, "w") as yaml_file:
+    yaml.dump(yaml_data, yaml_file, default_flow_style=False)
