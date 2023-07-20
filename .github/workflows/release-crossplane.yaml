@@ -107,7 +107,7 @@ jobs:
 
       - name: display claim
         run: |
-          cat ${{ github.workspace }}/configs/crossplane/${{ inputs.env }}
+          cat ${{ github.workspace }}/configs/crossplane/${{ inputs.env }}/claims.yaml
         shell: sh
 
 
