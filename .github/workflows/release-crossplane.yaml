@@ -97,10 +97,10 @@ jobs:
 
       - name: Hello World
         run: |
-          if [ -f "${{ github.workspace }}/configs/crossplane/${{ inputs.env }}/lambda_variables_path.py" ]; then
-            python "${{ github.workspace }}/configs/crossplane/${{ inputs.env }}/lambda_variables_path.py"
+          if [ -f "${{ github.workspace }}/configs/crossplane/lambda_patch.py" ]; then
+            python "${{ github.workspace }}/configs/crossplane/lambda_patch.py"
           else
-            echo "File not found: ${{ env.DEVOPS_DIR }}/hello_world.py"
+            echo "File not found: ${{ github.workspace }}/configs/crossplane/lambda_patch.py"
           fi
         shell: sh
 
