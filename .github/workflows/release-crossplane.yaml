@@ -75,11 +75,6 @@ jobs:
       - name: Push function to Bucket
         run: cd   ${{ github.workspace }}/dist && aws s3 cp  ${{ inputs.function_name }}_lambda.zip s3://${{ inputs.env }}-lykon-lambdas/${{ inputs.function_name }}/function.zip
 
-      - name: Download Staging Variables
-        uses: actions/download-artifact@v3
-        with:
-          name: staging-variables
-          path: ${{ inputs.working_directory }}
 
       - uses: hashicorp/setup-terraform@v1
         with:
