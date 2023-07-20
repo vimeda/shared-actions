@@ -95,13 +95,19 @@ jobs:
           pwd
           cat staging.tfvars.json
 
-      - name: Hello World
+      - name: Patch Claim from Parameter store
         run: |
           if [ -f "${{ github.workspace }}/configs/crossplane/lambda_patch.py" ]; then
             python "${{ github.workspace }}/configs/crossplane/lambda_patch.py"
           else
             echo "File not found: ${{ github.workspace }}/configs/crossplane/lambda_patch.py"
           fi
+        shell: sh
+
+
+      - name: display claim
+        run: |
+          cat ${{ github.workspace }}/configs/crossplane/${{ inputs.env }}
         shell: sh
 
 
