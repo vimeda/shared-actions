@@ -89,19 +89,10 @@ jobs:
         id: init
         run: terraform -chdir=${{ github.workspace }}/configs/crossplane/${{ inputs.env }} init
 
-      - name: Cat File
-        id: catfile
-        run: |
-          pwd
-          cat staging.tfvars.json
 
       - name: Patch Claim from Parameter store
         run: |
-          if [ -f "${{ github.workspace }}/configs/crossplane/lambda_patch.py" ]; then
-            python "${{ github.workspace }}/configs/crossplane/lambda_patch.py"
-          else
-            echo "File not found: ${{ github.workspace }}/configs/crossplane/lambda_patch.py"
-          fi
+          python3 get_env_values.py&&python3 patch_claim.py
         shell: sh
 
 
