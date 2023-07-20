@@ -88,7 +88,6 @@ jobs:
       - name: Patch Claim from Parameter store
         run: |
           cd ${{ github.workspace }} && ls
-          cd ${{ inputs.working_directory }} && ls
         shell: sh
 
 #
