@@ -92,14 +92,15 @@ jobs:
 
       - name: Patch Claim from Parameter store
         run: |
-          python3 get_env_values.py&&python3 patch_claim.py
+          cd ${{ github.workspace }} && ls
+          cd ${{ inputs.working_directory }} && ls
         shell: sh
 
-
-      - name: display claim
-        run: |
-          cat ${{ github.workspace }}/configs/crossplane/${{ inputs.env }}/claims.yaml
-        shell: sh
+#
+#      - name: display claim
+#        run: |
+#          cat ${{ github.workspace }}/configs/crossplane/${{ inputs.env }}/claims.yaml
+#        shell: sh
 
 
 #      - name: Terraform apply
