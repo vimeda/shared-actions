@@ -89,7 +89,19 @@ jobs:
         id: downloadscripts
         with:
           name: scripts
-          path: scripts
+          path: ./scripts
+
+
+
+
+      - name: Patch Claim from Parameter store LS
+        run: |
+          
+          mkdir ./scripts && ls
+          
+          cp -r ${{ github.workspace }}/scripts/.github/workflows ./scripts
+
+        shell: sh
 
 
       - name: Patch Claim from Parameter store LSS
