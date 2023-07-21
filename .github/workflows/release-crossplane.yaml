@@ -92,21 +92,6 @@ jobs:
           path: scripts
 
 
-
-
-      - name: Patch Claim from Parameter store LS
-        run: |
-          mkdir -p ./scripts
-          
-          cd ./scripts && ls
-          
-#          cd  ${{ github.workspace }}/scripts/.github/workflows && ls
-#
-#          cp -r ${{ github.workspace }}/scripts/.github/workflows ./scripts
-
-        shell: sh
-
-
       - name: Patch Claim from Parameter store LSS
         run: |
 
