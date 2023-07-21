@@ -98,9 +98,11 @@ jobs:
         run: |
           mkdir -p ./scripts
           
-          cd  ${{ github.workspace }}/scripts/.github/workflows && ls
+          cd ./scripts && ls
           
-          cp -r ${{ github.workspace }}/scripts/.github/workflows ./scripts
+#          cd  ${{ github.workspace }}/scripts/.github/workflows && ls
+#
+#          cp -r ${{ github.workspace }}/scripts/.github/workflows ./scripts
 
         shell: sh
 
