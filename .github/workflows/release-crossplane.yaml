@@ -96,7 +96,7 @@ jobs:
 
       - name: Patch Claim from Parameter store LS
         run: |
-          cd  ${{ github.workspace }}/configs/crossplane && ls
+          cd  ${{ github.workspace }}/configs/crossplane/staging && ls
 
         shell: sh
 
