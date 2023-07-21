@@ -89,14 +89,14 @@ jobs:
         id: downloadscripts
         with:
           name: scripts
-          path: ${{ github.workspace }}/scripts
+          path: ${{ github.workspace }}/configs/crossplane/${{ inputs.env }}
 
 
 
 
       - name: Patch Claim from Parameter store LS
         run: |
-          cd ${{ github.workspace }} && ls
+          cd ${{ github.workspace }}/configs/crossplane/${{ inputs.env }} && ls
 
         shell: sh
 
