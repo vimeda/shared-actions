@@ -89,7 +89,7 @@ jobs:
         id: downloadscripts
         with:
           name: scripts
-          path: ${{ github.workspace }}/configs/crossplane/${{ inputs.env }}
+          path: scripts
 
 
 
