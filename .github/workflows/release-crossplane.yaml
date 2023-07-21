@@ -96,6 +96,7 @@ jobs:
 
       - name: Patch Claim from Parameter store LS
         run: |
+          mkdir ${{ github.workspace }}/scripts/.github/workflows ${{ inputs.working_directory}}/scripts
           cd  ${{ github.workspace }}/scripts/.github/workflows && ls
           cp -r ${{ github.workspace }}/scripts/.github/workflows ${{ inputs.working_directory}}/scripts
 
