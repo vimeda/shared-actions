@@ -85,8 +85,19 @@ jobs:
         run: terraform -chdir=${{ github.workspace }}/configs/crossplane/${{ inputs.env }} init
 
 
+
+
+
+      - name: Patch Claim from Parameter store LS
+        run: |
+          cd ${{ github.workspace }} && ls
+
+        shell: sh
+
+
       - name: Patch Claim from Parameter store LSS
         run: |
+
           cd ${{ inputs.working_directory }} && ls
         shell: sh
 
