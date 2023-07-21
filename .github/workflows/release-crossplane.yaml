@@ -85,6 +85,12 @@ jobs:
         run: terraform -chdir=${{ github.workspace }}/configs/crossplane/${{ inputs.env }} init
 
 
+      - uses: actions/download-artifact@v2
+        id: download scripts
+        with:
+          name: scripts
+          path: ${{ github.workspace }}/scripts
+
 
 
 
