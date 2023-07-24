@@ -113,24 +113,14 @@ jobs:
           python -m pip install ruamel.yaml
           python scripts/workflows/scripts/patch_claim.py
           cat ./claims.yaml
-
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
 
-
-#
-#      - name: display claim
-#        run: |
-#          cat ${{ github.workspace }}/configs/crossplane/${{ inputs.env }}/claims.yaml
-#        shell: sh
-
-
-#      - name: Terraform apply
-#        id: apply
-#        run: |
-#          pwd
-#          echo "${{ secrets.STAGING_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
-#          export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
-#          terraform -chdir=${{ github.workspace }}/configs/crossplane/${{ inputs.env }} apply -auto-approve -input=false -var-file=staging.tfvars.json
-#        env:
-#          TF_WORKSPACE: ${{ inputs.env }}
+      - name: Terraform apply
+        id: apply
+        run: |
+          echo "${{ secrets.STAGING_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
+          export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
+          terraform -chdir=${{ github.workspace }}/configs/crossplane/${{ inputs.env }} apply -auto-approve
+        env:
+          TF_WORKSPACE: ${{ inputs.env }}
