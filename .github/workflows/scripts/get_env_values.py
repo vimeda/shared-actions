@@ -7,6 +7,8 @@ def run_op_command(command):
         return result.stdout.strip()
     except subprocess.CalledProcessError as e:
         print(f"Error executing the command: {e}")
+        print(f"Command returned non-zero exit code: {e.returncode}")
+        print(f"Command output: {e.output}")
         return None
     except Exception as ex:
         print(f"An unexpected error occurred: {ex}")
@@ -20,6 +22,7 @@ def save_to_env(labels_values, output_file):
 def main():
     # Execute the initial op command to get the sample data
     initial_command = 'op items get order-srv --format=json'
+    print("Fetching sample data...")
     sample_data = run_op_command(initial_command)
 
     if sample_data is None:
@@ -27,11 +30,16 @@ def main():
         return
 
     # Parse the JSON data
-    parsed_data = json.loads(sample_data)
+    try:
+        parsed_data = json.loads(sample_data)
+    except json.JSONDecodeError as e:
+        print(f"Error parsing JSON data: {e}")
+        return
 
     labels_values = {}
 
     # Extract the label and execute the command for each label
+    print("Fetching values for labels...")
     for field in parsed_data['fields']:
         label = field['label']
         value = run_op_command(f'op read op://errsir3kqd4gdjgaxliofyskey/order-srv/{label}')

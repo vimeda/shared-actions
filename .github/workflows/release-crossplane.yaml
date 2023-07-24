@@ -105,21 +105,13 @@ jobs:
           sudo mv op /usr/local/bin
           rm op.zip
           
-          op user get --me
-        env:
-          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
-
-
-      - name: Get and patch Claim from Parameter store
-        run: |
-            ls
-            python scripts/workflows/scripts/get_env_values.py
-            cat envs.out
-            cat ./envs.out
+          ls
+          python scripts/workflows/scripts/get_env_values.py
+          cat envs.out
 #            python scripts/workflows/scripts/patch_claim.py
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
-        shell: sh
+
 
 #
 #      - name: display claim
