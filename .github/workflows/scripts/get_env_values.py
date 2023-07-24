@@ -16,8 +16,10 @@ def run_op_command(command):
 
 def save_to_env(labels_values, output_file):
     with open(output_file, "w") as env_file:
+        env_file.write("envVariables:\n")
+        env_file.write("  - variables:\n")
         for label, value in labels_values.items():
-            env_file.write(f"{label}: {value}\n")
+            env_file.write(f"      {label}: {value}\n")
 
 def main():
     # Execute the initial op command to get the sample data
