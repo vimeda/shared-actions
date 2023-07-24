@@ -21,7 +21,7 @@ def save_to_env(labels_values, output_file):
 
 def main():
     # Execute the initial op command to get the sample data
-    initial_command = 'op items get order-srv --format=json'
+    initial_command = 'op items get order-srv --vault=errsir3kqd4gdjgaxliofyskey --format=json'
     print("Fetching sample data...")
     sample_data = run_op_command(initial_command)
 
