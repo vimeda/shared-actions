@@ -79,23 +79,24 @@ jobs:
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: ~1.0
+      - name: Load secret
+        id: op-load-secret
+        uses: 1password/load-secrets-action@v1
+        with:
+          export-env: false
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          SECRET: op://37y43e5v2qd3iptgt7wgyk34ga/order-srv/SENTRY_DSN
+
+      - name: Print masked secret
+        run:
+          echo "Secret: ${{ steps.op-load-secret.outputs.SECRET }}"
+        # Prints: Secret: ***
 
       - name: Terraform Init
         id: init
         run: terraform -chdir=${{ github.workspace }}/configs/crossplane/${{ inputs.env }} init
-      - name: Load secret
-        uses: 1password/load-secrets-action@v1
-        with:
-          # Export loaded secrets as environment variables
-          export-env: true
-        env:
-          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
-          SENTRY_DSN: op:/37y43e5v2qd3iptgt7wgyk34ga/order-srv/SENTRY_DSN
 
-      - name: Print masked secret
-        run:
-          echo "Secret: $SENTRY_DSN"
-        # Prints: Secret: ***
 
       - uses: actions/download-artifact@v2
         id: downloadscripts
