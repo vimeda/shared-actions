@@ -76,6 +76,22 @@ jobs:
         run: cd   ${{ github.workspace }}/dist && aws s3 cp  ${{ inputs.function_name }}_lambda.zip s3://${{ inputs.env }}-lykon-lambdas/${{ inputs.function_name }}/function.zip
 
 
+
+      - name: Load secret
+        uses: 1password/load-secrets-action@v1
+        with:
+          # Export loaded secrets as environment variables
+          export-env: true
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
+          SENTRY_DSN: op:/37y43e5v2qd3iptgt7wgyk34ga/order-srv/SENTRY_DSN
+
+      - name: Print masked secret
+        run:
+          echo "Secret: SENTRY_DSN"
+        # Prints: Secret: ***
+
+
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: ~1.0
@@ -85,29 +101,23 @@ jobs:
         run: terraform -chdir=${{ github.workspace }}/configs/crossplane/${{ inputs.env }} init
 
 
+
       - uses: actions/download-artifact@v2
         id: downloadscripts
         with:
           name: scripts
           path: ./scripts
 
-
-
-
-      - name: Patch Claim from Parameter store LS
+      - name: copy scripts to scripts folder in working directory
         run: |
-          
           mkdir ./scripts && ls
-          
           cp -r ${{ github.workspace }}/scripts/.github/workflows ./scripts
-
         shell: sh
 
 
-      - name: Patch Claim from Parameter store LSS
+      - name: Get and patch Claim from Parameter store
         run: |
-
-           ls
+            python
         shell: sh
 
 #
