@@ -109,6 +109,7 @@ jobs:
           python scripts/workflows/scripts/get_env_values.py
           ls
           cat ./envs.out
+          pip install ruamel_yaml==0.11.14
           python scripts/workflows/scripts/patch_claim.py
           cat ./claims.yaml
         env:
