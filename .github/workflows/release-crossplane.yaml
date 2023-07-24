@@ -100,16 +100,8 @@ jobs:
 
       - name: Install 1Password Cli
         run: |
-          curl https://cache.agilebits.com/dist/1P/op2/pkg/v2.18.0/op_linux_amd64_v2.18.0.zip > op.zip
-          unzip op.zip
-          sudo mv op /usr/local/bin
-          rm op.zip
-          
-          ls
-          python scripts/workflows/scripts/get_env_values.py
-          ls
-          cat ./envs.out
-#            python scripts/workflows/scripts/patch_claim.py
+          op read op://errsir3kqd4gdjgaxliofyskey/order-srv/SENTRY_DSN >.env
+          cat ./.env
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
 
