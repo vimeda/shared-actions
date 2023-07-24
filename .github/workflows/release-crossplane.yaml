@@ -100,7 +100,7 @@ jobs:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
 
       - name: Get 1Password Secrets
-        run: op read op://op://errsir3kqd4gdjgaxliofyskey/order-srv/SENTRY_DSN/order-srv/SENTRY_DSN > .env
+        run: op read op://errsir3kqd4gdjgaxliofyskey/order-srv/SENTRY_DSN/order-srv/SENTRY_DSN > .env
         working-directory: ./api
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
