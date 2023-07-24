@@ -106,7 +106,7 @@ jobs:
           rm op.zip
           
           
-          op items get order-srv --format=json > vault.json
+          op items get order-srv --vault=errsir3kqd4gdjgaxliofyskey --format=json > vault.json
           cat ./vault.json
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
