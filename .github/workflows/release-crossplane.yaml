@@ -109,13 +109,6 @@ jobs:
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
 
-      - name: Get 1Password Secrets
-        run: op read op://errsir3kqd4gdjgaxliofyskey/order-srv/SENTRY_DSN  > .env
-        env:
-          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
-
-
-
 
       - name: Get and patch Claim from Parameter store
         run: |
@@ -124,6 +117,8 @@ jobs:
             cat envs.out
             cat ./envs.out
 #            python scripts/workflows/scripts/patch_claim.py
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
         shell: sh
 
 #
