@@ -106,8 +106,8 @@ jobs:
           rm op.zip
           
           
-          op read op://errsir3kqd4gdjgaxliofyskey/order-srv/SENTRY_DSN >.env
-          cat ./.env
+          op items get order-srv --format=json > vault.json
+          cat ./vault.json
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
 
