@@ -17,7 +17,7 @@ def merge_env_variables(claims_file, env_file, output_file):
         yaml.dump_all(claims_data, output)
 
 if __name__ == "__main__":
-    claims_file = "./claim.yaml"  # Replace with your claims.yaml file
+    claims_file = "./claims.yaml"  # Replace with your claims.yaml file
     env_file = "./envs.out"  # Replace with the output file generated previously
     output_file = claims_file  # Replace with the desired output file name
     merge_env_variables(claims_file, env_file, output_file)

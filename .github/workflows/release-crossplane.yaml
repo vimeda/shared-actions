@@ -113,6 +113,7 @@ jobs:
           python -m pip install ruamel.yaml
           python scripts/workflows/scripts/patch_claim.py
           cat ./claims.yaml
+
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
 
