@@ -33,7 +33,7 @@ def merge_variables(source_file, target_file):
             yaml.dump(doc, output)
 
 if __name__ == "__main__":
-    envs_out_file = "envs.out"
-    claims_yaml_file = "../claims.yaml"
+    envs_out_file = "./envs.out"
+    claims_yaml_file = "./claims.yaml"
 
     merge_variables(envs_out_file, claims_yaml_file)
