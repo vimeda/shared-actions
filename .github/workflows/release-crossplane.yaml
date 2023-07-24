@@ -76,7 +76,13 @@ jobs:
         run: cd   ${{ github.workspace }}/dist && aws s3 cp  ${{ inputs.function_name }}_lambda.zip s3://${{ inputs.env }}-lykon-lambdas/${{ inputs.function_name }}/function.zip
 
 
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ~1.0
 
+      - name: Terraform Init
+        id: init
+        run: terraform -chdir=${{ github.workspace }}/configs/crossplane/${{ inputs.env }} init
       - name: Load secret
         uses: 1password/load-secrets-action@v1
         with:
@@ -88,19 +94,8 @@ jobs:
 
       - name: Print masked secret
         run:
-          echo "Secret: SENTRY_DSN"
+          echo "Secret: $SENTRY_DSN"
         # Prints: Secret: ***
-
-
-      - uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: ~1.0
-
-      - name: Terraform Init
-        id: init
-        run: terraform -chdir=${{ github.workspace }}/configs/crossplane/${{ inputs.env }} init
-
-
 
       - uses: actions/download-artifact@v2
         id: downloadscripts
