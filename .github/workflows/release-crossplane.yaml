@@ -79,33 +79,6 @@ jobs:
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: ~1.0
-      - name: Load secret
-        id: op-load-secret
-        uses: 1password/load-secrets-action@v1
-        with:
-          export-env: false
-        env:
-          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
-          SECRET: op://op://errsir3kqd4gdjgaxliofyskey/order-srv/SENTRY_DSN/order-srv/SENTRY_DSN
-
-      - name: Install 1Password Cli
-        run: |
-          curl https://cache.agilebits.com/dist/1P/op2/pkg/v2.18.0/op_linux_amd64_v2.18.0.zip > op.zip
-          unzip op.zip
-          sudo mv op /usr/local/bin
-          rm op.zip
-
-          op user get --me
-        env:
-          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
-
-      - name: Get 1Password Secrets
-        run: op read op://errsir3kqd4gdjgaxliofyskey/order-srv/SENTRY_DSN  > .env
-
-        env:
-          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
-
-
 
       - name: Terraform Init
         id: init
@@ -118,11 +91,30 @@ jobs:
           name: scripts
           path: ./scripts
 
+
       - name: copy scripts to scripts folder in working directory
         run: |
           mkdir ./scripts && ls
           cp -r ${{ github.workspace }}/scripts/.github/workflows ./scripts
         shell: sh
+
+      - name: Install 1Password Cli
+        run: |
+          curl https://cache.agilebits.com/dist/1P/op2/pkg/v2.18.0/op_linux_amd64_v2.18.0.zip > op.zip
+          unzip op.zip
+          sudo mv op /usr/local/bin
+          rm op.zip
+          
+          op user get --me
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
+
+      - name: Get 1Password Secrets
+        run: op read op://errsir3kqd4gdjgaxliofyskey/order-srv/SENTRY_DSN  > .env
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
+
+
 
 
       - name: Get and patch Claim from Parameter store
