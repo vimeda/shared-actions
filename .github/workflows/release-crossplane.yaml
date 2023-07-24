@@ -121,6 +121,7 @@ jobs:
         run: |
             ls
             python scripts/workflows/scripts/get_env_values.py
+            cat envs.out
             cat ./envs.out
 #            python scripts/workflows/scripts/patch_claim.py
         shell: sh
