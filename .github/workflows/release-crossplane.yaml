@@ -107,7 +107,8 @@ jobs:
           
           ls
           python scripts/workflows/scripts/get_env_values.py
-          cat envs.out
+          ls
+          cat ./envs.out
 #            python scripts/workflows/scripts/patch_claim.py
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
