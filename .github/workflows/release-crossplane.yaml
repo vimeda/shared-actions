@@ -85,13 +85,27 @@ jobs:
         with:
           export-env: false
         env:
-          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-          SECRET: op://37y43e5v2qd3iptgt7wgyk34ga/order-srv/SENTRY_DSN
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
+          SECRET: op://op://errsir3kqd4gdjgaxliofyskey/order-srv/SENTRY_DSN/order-srv/SENTRY_DSN
 
-      - name: Print masked secret
-        run:
-          echo "Secret: ${{ steps.op-load-secret.outputs.SECRET }}"
-        # Prints: Secret: ***
+      - name: Install 1Password Cli
+        run: |
+          curl https://cache.agilebits.com/dist/1P/op2/pkg/v2.18.0/op_linux_amd64_v2.18.0.zip > op.zip
+          unzip op.zip
+          sudo mv op /usr/local/bin
+          rm op.zip
+
+          op user get --me
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Get 1Password Secrets
+        run: op read op://op://errsir3kqd4gdjgaxliofyskey/order-srv/SENTRY_DSN/order-srv/SENTRY_DSN > .env
+        working-directory: ./api
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
+
+
 
       - name: Terraform Init
         id: init
