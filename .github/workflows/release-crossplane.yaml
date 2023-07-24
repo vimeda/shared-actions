@@ -97,7 +97,7 @@ jobs:
 
           op user get --me
         env:
-          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
 
       - name: Get 1Password Secrets
         run: op read op://op://errsir3kqd4gdjgaxliofyskey/order-srv/SENTRY_DSN/order-srv/SENTRY_DSN > .env
