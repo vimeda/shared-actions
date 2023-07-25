@@ -15,6 +15,9 @@ def run_op_command(command):
         return None
 
 def save_to_env(labels_values, output_file):
+    # Filter out null or empty values
+    labels_values = {label: value for label, value in labels_values.items() if value is not None and value.strip() != ""}
+
     with open(output_file, "w") as env_file:
         env_file.write("envVariables:\n")
         env_file.write("  - variables:\n")
@@ -22,6 +25,7 @@ def save_to_env(labels_values, output_file):
             env_file.write(f"      {label}: {value}\n")
 
 def main():
+    repo_name = sys.argv[1]
     # Execute the initial op command to get the sample data
     initial_command = 'op items get order-srv --vault=errsir3kqd4gdjgaxliofyskey --format=json'
     print("Fetching sample data...")
@@ -44,7 +48,7 @@ def main():
     print("Fetching values for labels...")
     for field in parsed_data['fields']:
         label = field['label']
-        value = run_op_command(f'op read op://errsir3kqd4gdjgaxliofyskey/order-srv/{label}')
+        value = run_op_command(f'op read op://errsir3kqd4gdjgaxliofyskey/${repo_name}/{label}')
         if value is not None:
             labels_values[label] = value
 

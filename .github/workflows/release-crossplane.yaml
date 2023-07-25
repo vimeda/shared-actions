@@ -104,9 +104,8 @@ jobs:
           unzip op.zip
           sudo mv op /usr/local/bin
           rm op.zip
-          
           ls
-          python scripts/workflows/scripts/get_env_values.py
+          python scripts/workflows/scripts/get_env_values.py $GITHUB_REPOSITORY
           ls
           cat ./envs.out
           
