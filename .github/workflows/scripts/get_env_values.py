@@ -25,7 +25,10 @@ def save_to_env(labels_values, output_file):
             env_file.write(f"      {label}: {value}\n")
 
 def main():
-    repo_name = os.environ.get('GITHUB_REPOSITORY')
+
+    github_repository = os.environ.get('GITHUB_REPOSITORY')
+    repo_name = github_repository.split('/')[1]
+
     # Execute the initial op command to get the sample data
     initial_command = 'op items get order-srv --vault=errsir3kqd4gdjgaxliofyskey --format=json'
     print("Fetching sample data...")
@@ -48,7 +51,7 @@ def main():
     print("Fetching values for labels...")
     for field in parsed_data['fields']:
         label = field['label']
-        value = run_op_command(f'op read op://errsir3kqd4gdjgaxliofyskey/${repo_name}/{label}')
+        value = run_op_command(f'op read op://errsir3kqd4gdjgaxliofyskey/{repo_name}/{label}')
         if value is not None:
             labels_values[label] = value
 
