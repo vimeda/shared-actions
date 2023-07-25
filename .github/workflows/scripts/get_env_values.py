@@ -1,6 +1,6 @@
 import subprocess
 import json
-
+import os
 def run_op_command(command):
     try:
         result = subprocess.run(command, shell=True, capture_output=True, text=True, check=True)
@@ -25,7 +25,7 @@ def save_to_env(labels_values, output_file):
             env_file.write(f"      {label}: {value}\n")
 
 def main():
-    repo_name = sys.argv[1]
+    repo_name = os.environ.get('GITHUB_REPOSITORY')
     # Execute the initial op command to get the sample data
     initial_command = 'op items get order-srv --vault=errsir3kqd4gdjgaxliofyskey --format=json'
     print("Fetching sample data...")
