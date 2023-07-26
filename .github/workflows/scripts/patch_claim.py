@@ -24,7 +24,7 @@ def main():
     try:
         github_repository = os.environ.get('GITHUB_REPOSITORY')
         repo_name = github_repository.split('/')[1]
-        vault_id = os.environ.get('STAGING_ONEPASSWORD_VAULT_ID')
+        vault_id = os.environ.get('VAULT_ID')
 
         print("THis is the vault ID ${vault_id}")
         print("THis is the vault ID ${repo_name}")
