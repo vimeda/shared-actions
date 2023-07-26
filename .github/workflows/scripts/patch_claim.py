@@ -26,6 +26,8 @@ def main():
         repo_name = github_repository.split('/')[1]
         vault_id = os.environ.get('VAULT_ID')
 
+        print("THis is the vault ID {VAULT_ID}")
+
         # Command to get JSON from the provided command
         command = 'op items get ${repo_name} --vault=${vault_id} --format=json | jq ".fields | map({(.label): .value}) | {envVariables: {variables: .}}"'
         json_output = run_command(command)
