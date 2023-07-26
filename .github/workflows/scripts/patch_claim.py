@@ -16,13 +16,17 @@ def clean_json_data(json_data):
 def merge_yaml_with_json(existing_yaml_data, json_data):
     if existing_yaml_data is None:
         existing_yaml_data = {}
-    existing_yaml_data['spec']['parameters']['envVariables'][0]['variables'] = clean_json_data(json_data)
+    existing_yaml_data['spec']['parameters']['envVariables'] = [{'variables': {k: v for entry in clean_json_data(json_data) for k, v in entry.items()}}]
     return existing_yaml_data
 
 def main():
     try:
+        github_repository = os.environ.get('GITHUB_REPOSITORY')
+        repo_name = github_repository.split('/')[1]
+        vault_id = os.environ.get('VAULT_ID')
+
         # Command to get JSON from the provided command
-        command = 'op items get order-srv --vault=errsir3kqd4gdjgaxliofyskey --format=json | jq ".fields | map({(.label): .value}) | {envVariables: {variables: .}}"'
+        command = 'op items get ${repo_name} --vault=${vault_id} --format=json | jq ".fields | map({(.label): .value}) | {envVariables: {variables: .}}"'
         json_output = run_command(command)
 
         # Load the existing YAML file with multiple documents
