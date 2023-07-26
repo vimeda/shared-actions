@@ -105,10 +105,6 @@ jobs:
           sudo mv op /usr/local/bin
           rm op.zip
           ls
-          python scripts/workflows/scripts/get_env_values.py 
-          ls
-          cat ./envs.out
-          
           python -m pip install ruamel.yaml
           python scripts/workflows/scripts/patch_claim.py
           cat ./claims.yaml
