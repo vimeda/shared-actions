@@ -60,8 +60,8 @@ def main():
 #         with open('claims.yaml', 'w') as file:
 #             yaml.dump_all(existing_yaml_data_list, file, default_flow_style=False)  # Set default_flow_style to False
 #
-#     except Exception as e:
-#         print(f"An error occurred: {e}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 if __name__ == "__main__":
     main()
