@@ -29,37 +29,37 @@ def main():
         print(f"THis is the vault ID {vault_id}")
         print(f"THis is the vault ID {repo_name}")
 
-#         # Command to get JSON from the provided command
-#         command = 'op items get ${repo_name} --vault=${vault_id} --format=json | jq ".fields | map({(.label): .value}) | {envVariables: {variables: .}}"'
-#         json_output = run_command(command)
-#
-#         # Load the existing YAML file with multiple documents
-#         with open('claims.yaml', 'r') as file:
-#             existing_yaml_data_list = list(yaml.safe_load_all(file))
-#
-#         # Find the 'kind: XLambda' document in the list of documents
-#         xlambda_documents = [doc for doc in existing_yaml_data_list if doc.get('kind') == 'XLambda']
-#
-#         if not xlambda_documents:
-#             print("No 'kind: XLambda' document found in claims.yaml.")
-#             return
-#
-#         # Assuming there is only one 'kind: XLambda' document, take the first one
-#         xlambda_document = xlambda_documents[0]
-#
-#         # Parse the JSON output
-#         parsed_json = json.loads(json_output)
-#
-#         # Merge the parsed JSON with the existing YAML for the 'kind: XLambda' document
-#         merged_yaml_data = merge_yaml_with_json(xlambda_document, parsed_json['envVariables']['variables'])
-#
-#         # Update the 'kind: XLambda' document in the list
-#         existing_yaml_data_list[existing_yaml_data_list.index(xlambda_document)] = merged_yaml_data
-#
-#         # Write the updated YAML back to the file
-#         with open('claims.yaml', 'w') as file:
-#             yaml.dump_all(existing_yaml_data_list, file, default_flow_style=False)  # Set default_flow_style to False
-#
+        # Command to get JSON from the provided command
+        command = 'op items get ${repo_name} --vault=${vault_id} --format=json | jq ".fields | map({(.label): .value}) | {envVariables: {variables: .}}"'
+        json_output = run_command(command)
+
+        # Load the existing YAML file with multiple documents
+        with open('claims.yaml', 'r') as file:
+            existing_yaml_data_list = list(yaml.safe_load_all(file))
+
+        # Find the 'kind: XLambda' document in the list of documents
+        xlambda_documents = [doc for doc in existing_yaml_data_list if doc.get('kind') == 'XLambda']
+
+        if not xlambda_documents:
+            print("No 'kind: XLambda' document found in claims.yaml.")
+            return
+
+        # Assuming there is only one 'kind: XLambda' document, take the first one
+        xlambda_document = xlambda_documents[0]
+
+        # Parse the JSON output
+        parsed_json = json.loads(json_output)
+
+        # Merge the parsed JSON with the existing YAML for the 'kind: XLambda' document
+        merged_yaml_data = merge_yaml_with_json(xlambda_document, parsed_json['envVariables']['variables'])
+
+        # Update the 'kind: XLambda' document in the list
+        existing_yaml_data_list[existing_yaml_data_list.index(xlambda_document)] = merged_yaml_data
+
+        # Write the updated YAML back to the file
+        with open('claims.yaml', 'w') as file:
+            yaml.dump_all(existing_yaml_data_list, file, default_flow_style=False)  # Set default_flow_style to False
+
     except Exception as e:
         print(f"An error occurred: {e}")
 
