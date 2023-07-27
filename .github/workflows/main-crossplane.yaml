@@ -114,7 +114,7 @@ jobs:
           cat ./claims.yaml
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
-          VAULT_ID: ${{ inputs.vault }}
+          VAULT_ID: ${{ inputs.vault_id }}
 
       - name: Terraform apply
         id: apply
