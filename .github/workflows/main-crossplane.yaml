@@ -20,6 +20,9 @@ on:
       env:
         required: true
         type: string
+      vault:
+        required: true
+        type: string
 
 permissions:
   id-token: write
@@ -111,7 +114,7 @@ jobs:
           cat ./claims.yaml
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
-          VAULT_ID: ${{ secrets.STAGING_ONEPASSWORD_VAULT_ID }}
+          VAULT_ID: ${{ inputs.vault }}
 
       - name: Terraform apply
         id: apply
