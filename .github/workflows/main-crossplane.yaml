@@ -98,7 +98,7 @@ jobs:
           cp -r ${{ github.workspace }}/scripts/.github/workflows ./scripts
         shell: sh
 
-      - name: Install 1Password Cli
+      - name: Install 1Password Cli and apply claim
         run: |
           curl https://cache.agilebits.com/dist/1P/op2/pkg/v2.18.0/op_linux_amd64_v2.18.0.zip > op.zip
           unzip op.zip
@@ -110,7 +110,7 @@ jobs:
           cat ./claims.yaml
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
-          VAULT_ID: 'errsir3kqd4gdjgaxliofyskey'
+          VAULT_ID: "errsir3kqd4gdjgaxliofyskey"
 
       - name: Terraform apply
         id: apply
