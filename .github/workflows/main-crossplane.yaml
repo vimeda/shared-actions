@@ -20,7 +20,7 @@ on:
       env:
         required: true
         type: string
-      vault:
+      vault_id:
         required: true
         type: string
 
