@@ -111,11 +111,11 @@ jobs:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
           VAULT_ID: "errsir3kqd4gdjgaxliofyskey"
 
-      - name: Terraform apply
-        id: apply
+      - name: Terraform plan
+        id: plan
         run: |
           echo "${{ secrets.STAGING_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
-          terraform -chdir=${{ github.workspace }}/configs/crossplane/${{ inputs.env }} apply -auto-approve
+          terraform -chdir=${{ github.workspace }}/configs/crossplane/${{ inputs.env }} plan
         env:
           TF_WORKSPACE: ${{ inputs.env }}
