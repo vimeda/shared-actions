@@ -30,7 +30,7 @@ def main():
         print(f"THis is the vault ID {repo_name}")
 
         # Command to get JSON from the provided command
-        command = f'op items get {repo_name} --vault=errsir3kqd4gdjgaxliofyskey --format=json | jq ".fields | map({(.label): .value}) | {envVariables: {variables: .}}"'
+        command = 'op items get ' + repo_name + ' --vault=' + vault_id + ' --format=json | jq ".fields | map({(.label): .value}) | {\"envVariables\": {\"variables\": .}}"'
         json_output = run_command(command)
 
         # Load the existing YAML file with multiple documents
