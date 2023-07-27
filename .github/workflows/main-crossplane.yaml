@@ -20,9 +20,6 @@ on:
       env:
         required: true
         type: string
-      vault_id:
-        required: true
-        type: string
 
 permissions:
   id-token: write
