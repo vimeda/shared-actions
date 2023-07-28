@@ -60,8 +60,9 @@ def main():
     try:
         # Load all files ending with "-claims.yaml" in the directory
         for filename in os.listdir():
+         print(filename)
             if filename.endswith("-claims.yaml"):
-                print(filename)
+
                 process_file(filename)
 
     except Exception as e:
