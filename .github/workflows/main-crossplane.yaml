@@ -20,6 +20,7 @@ on:
       env:
         required: true
         type: string
+
 permissions:
   id-token: write
   contents: read
@@ -71,6 +72,15 @@ jobs:
         run: ls -R
         working-directory: ${{ steps.download.outputs.download-path }}
 
+      - name: Push function to Bucket
+        run: | 
+           cd   ${{ github.workspace }}/dist
+          cd ${{ github.workspace }}/dist
+            for name in ${{ inputs.function_names }}
+            do
+             aws s3 cp "${name}_lambda.zip" "s3://${{ inputs.env }}-lykon-lambdas/${name}/function.zip"
+          done
+#          aws s3 cp  ${{ inputs.function_name }}_lambda.zip s3://${{ inputs.env }}-lykon-lambdas/${{ inputs.function_name }}/function.zip
 
 
       - uses: hashicorp/setup-terraform@v1
