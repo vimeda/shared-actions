@@ -106,7 +106,7 @@ jobs:
           rm op.zip
           ls
           python -m pip install ruamel.yaml
-          python scripts/workflows/scripts/patch_claim.py
+#          python scripts/workflows/scripts/patch_claim.py
 #          for file in *claims.yaml; do
 #              if [ -f "$file" ]; then
 #                  cat "$file"
