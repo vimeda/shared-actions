@@ -14,9 +14,6 @@ on:
       working_directory:
         required: true
         type: string
-      function_names:
-        required: true
-        type: array
       env:
         required: true
         type: string
