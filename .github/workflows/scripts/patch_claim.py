@@ -60,7 +60,6 @@ def main():
     try:
 
         print (os.listdir())
-        ls
         print("hello precious")
 
 
