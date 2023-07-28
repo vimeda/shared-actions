@@ -14,13 +14,12 @@ on:
       working_directory:
         required: true
         type: string
-      function_name:
+      function_names:
         required: true
-        type: string
+        type: array
       env:
         required: true
         type: string
-
 permissions:
   id-token: write
   contents: read
@@ -59,13 +58,13 @@ jobs:
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: order-srv-lambdas
+          name: upload-artifcats
           path: ${{ github.workspace }}/dist/*
 
       - uses: actions/download-artifact@v2
         id: download
         with:
-          name: order-srv-lambdas
+          name: download artificacts
           path:  ${{ github.workspace }}/dist
 
       - name: Display structure of downloaded files
@@ -73,7 +72,12 @@ jobs:
         working-directory: ${{ steps.download.outputs.download-path }}
 
       - name: Push function to Bucket
-        run: cd   ${{ github.workspace }}/dist && aws s3 cp  ${{ inputs.function_name }}_lambda.zip s3://${{ inputs.env }}-lykon-lambdas/${{ inputs.function_name }}/function.zip
+        run: | 
+          cd   ${{ github.workspace }}/dist
+          for name in "${function_names[@]}"
+          do
+            aws s3 cp "${name}_lambda.zip" "s3://${env}-lykon-lambdas/${name}/function.zip"
+          done
 
 
       - uses: hashicorp/setup-terraform@v1
