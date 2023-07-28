@@ -72,11 +72,11 @@ jobs:
         working-directory: ${{ steps.download.outputs.download-path }}
 
       - name: Push function to Bucket
-        run: | 
-          cd   ${{ github.workspace }}/dist
-          for name in "${function_names[@]}"
+        run: |
+          cd ${{ github.workspace }}/dist
+          for name in ${{ inputs.function_names }}
           do
-            aws s3 cp "${name}_lambda.zip" "s3://${env}-lykon-lambdas/${name}/function.zip"
+            aws s3 cp "${name}_lambda.zip" "s3://${{ inputs.env }}-lykon-lambdas/${name}/function.zip"
           done
 
 
