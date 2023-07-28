@@ -76,8 +76,6 @@ jobs:
           do
             aws s3 cp  ${{ inputs.function_name }}_lambda.zip s3://${{ inputs.env }}-lykon-lambdas/${{ inputs.function_name }}/function.zip
           done
-         
-
 
       - uses: hashicorp/setup-terraform@v1
         with:
