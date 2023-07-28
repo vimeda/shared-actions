@@ -71,7 +71,6 @@ jobs:
         run: ls -R
         working-directory: ${{ steps.download.outputs.download-path }}
 
-      - name: Push function to Bucket
 
 
       - uses: hashicorp/setup-terraform@v1
