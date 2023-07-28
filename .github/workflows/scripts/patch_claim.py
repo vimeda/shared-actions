@@ -58,14 +58,11 @@ import ruamel.yaml as yaml
 
 def main():
     try:
-        # Load all files ending with "-claims.yaml" in the directory
+
         print (os.listdir())
         ls
         print("hello precious")
-#         for filename in os.listdir():
-#           if filename.endswith("-claims.yaml"):
-#             print("file found"+filename)
-#             process_file(filename)
+
 
     except Exception as e:
         print(f"An error occurred: {e}")
