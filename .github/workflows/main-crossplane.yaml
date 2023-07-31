@@ -14,12 +14,10 @@ on:
       working_directory:
         required: true
         type: string
-      function_names:
-        required: true
-        type: array
       env:
         required: true
         type: string
+
 permissions:
   id-token: write
   contents: read
@@ -58,36 +56,33 @@ jobs:
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: upload-artifcats
+          name: srv-lambdas
           path: ${{ github.workspace }}/dist/*
 
       - uses: actions/download-artifact@v2
         id: download
         with:
-          name: download artificacts
+          name: srv-lambdas
           path:  ${{ github.workspace }}/dist
 
       - name: Display structure of downloaded files
         run: ls -R
         working-directory: ${{ steps.download.outputs.download-path }}
 
-      - name: Push function to Bucket
-        run: | 
-          cd   ${{ github.workspace }}/dist
-          for name in "${function_names[@]}"
+      - name: Push all functions to Bucket
+        run: |
+          cd ${{ github.workspace }}/dist && ls
+          for file in "./"/*_lambda.zip
           do
-            aws s3 cp "${name}_lambda.zip" "s3://${env}-lykon-lambdas/${name}/function.zip"
+            filename=$(basename "$file" .zip)
+            function_name=${filename%_lambda}
+            aws s3 cp "$file" "s3://${{inputs.env}}-lykon-lambdas/${{ github.event.repository.name}}/$function_name.zip"
           done
 
 
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: ~1.0
-
-      - name: Terraform Init
-        id: init
-        run: terraform -chdir=${{ github.workspace }}/configs/crossplane/${{ inputs.env }} init
-
 
       - uses: actions/download-artifact@v2
         id: downloadscripts
@@ -101,7 +96,7 @@ jobs:
           cp -r ${{ github.workspace }}/scripts/.github/workflows ./scripts
         shell: sh
 
-      - name: Install 1Password Cli and patch claim
+      - name: Install 1Password Cli, patch claim
         run: |
           curl https://cache.agilebits.com/dist/1P/op2/pkg/v2.18.0/op_linux_amd64_v2.18.0.zip > op.zip
           unzip op.zip
@@ -109,15 +104,22 @@ jobs:
           rm op.zip
           ls
           python -m pip install ruamel.yaml
-          python scripts/workflows/scripts/patch_claim.py
-          for file in *-claims.yaml; do
-            if [ -f "$file" ]; then
-            cat "$file"
-            fi
+
+          python  scripts/workflows/scripts/patch.py 
+          
+          for file in *claims.yaml; do
+              if [ -f "$file" ]; then
+                  cat $file
+              fi
           done
+
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
           VAULT_ID: "errsir3kqd4gdjgaxliofyskey"
+
+      - name: Terraform Init
+        id: init
+        run: terraform -chdir=${{ github.workspace }}/configs/crossplane/${{ inputs.env }} init
 
       - name: Terraform apply
         id: apply

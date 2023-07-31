@@ -3,16 +3,22 @@ import json
 import os
 import ruamel.yaml as yaml
 
-# Define the run_command function
 def run_command(command):
-    result = subprocess.run(command, stdout=subprocess.PIPE, shell=True, encoding='utf-8')
-    return result.stdout
+    return subprocess.check_output(command, shell=True).decode().strip()
 
-# Define the merge_yaml_with_json function
-def merge_yaml_with_json(yaml_data, json_data):
-    # Merge the YAML and JSON data as per your requirements
-    # Implement the logic for merging here
-    return yaml_data  # Replace this with the actual merged data
+def clean_json_data(json_data):
+    cleaned_data = []
+    for entry in json_data:
+        cleaned_entry = {key: value for key, value in entry.items() if value is not None}
+        if cleaned_entry:  # Only append if the dictionary is not empty
+            cleaned_data.append(cleaned_entry)
+    return cleaned_data
+
+def merge_yaml_with_json(existing_yaml_data, json_data):
+    if existing_yaml_data is None:
+        existing_yaml_data = {}
+    existing_yaml_data['spec']['parameters']['envVariables'] = [{'variables': {k: v for entry in clean_json_data(json_data) for k, v in entry.items()}}]
+    return existing_yaml_data
 
 def process_file(filename):
     try:
@@ -27,6 +33,7 @@ def process_file(filename):
         command = 'op items get ' + repo_name + ' --vault=' + vault_id + ' --format=json | jq ".fields | map({(.label): .value}) | {\"envVariables\": {\"variables\": .}}"'
         json_output = run_command(command)
 
+        # Load the existing YAML file with multiple documents
         with open(filename, 'r') as file:
             existing_yaml_data_list = list(yaml.safe_load_all(file))
 
@@ -40,10 +47,8 @@ def process_file(filename):
         # Assuming there is only one 'kind: XLambda' document, take the first one
         xlambda_document = xlambda_documents[0]
 
-        # Parse the JSON output
-        parsed_json = json.loads(json_output)
-
         # Merge the parsed JSON with the existing YAML for the 'kind: XLambda' document
+        parsed_json = json.loads(json_output)
         merged_yaml_data = merge_yaml_with_json(xlambda_document, parsed_json['envVariables']['variables'])
 
         # Update the 'kind: XLambda' document in the list
