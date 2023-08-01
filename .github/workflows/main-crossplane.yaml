@@ -72,7 +72,7 @@ jobs:
       - name: Push all functions to Bucket
         run: |
           cd ${{ github.workspace }}/dist && ls
-          for file in "./"/*_lambda.zip
+          for file in "./"/*lambda.zip
           do
             filename=$(basename "$file" .zip)
             function_name=${filename%_lambda}
