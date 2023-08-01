@@ -124,6 +124,8 @@ jobs:
       - name: Terraform apply
         id: apply
         run: |
+          cd ${{ github.workspace }}/configs/crossplane/${{ inputs.env }}
+          ls
           echo "${{ secrets.STAGING_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
           terraform -chdir=${{ github.workspace }}/configs/crossplane/${{ inputs.env }} apply -auto-approve
