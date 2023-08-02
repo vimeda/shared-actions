@@ -72,7 +72,7 @@ jobs:
       - name: Push all functions to Bucket
         run: |
           cd ${{ github.workspace }}/dist && ls
-          for file in "./"/*_lambda.zip
+          for file in "./"/*lambda.zip
           do
             filename=$(basename "$file" .zip)
             function_name=${filename%_lambda}
@@ -124,6 +124,10 @@ jobs:
       - name: Terraform apply
         id: apply
         run: |
+          cd ${{ github.workspace }}/configs/crossplane/${{ inputs.env }}
+          ls
+          cat main.tf
+          cat pixi-claims.yaml
           echo "${{ secrets.STAGING_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
           terraform -chdir=${{ github.workspace }}/configs/crossplane/${{ inputs.env }} apply -auto-approve
