@@ -114,7 +114,7 @@ jobs:
           done
 
         env:
-          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.PROD_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
           VAULT_ID: "errsir3kqd4gdjgaxliofyskey"
 
       - name: Terraform Init
@@ -127,8 +127,8 @@ jobs:
           cd ${{ github.workspace }}/configs/crossplane
           ls
           cat main.tf
-          cat staging/pixi-claims.yaml
-          echo "${{ secrets.STAGING_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
+          cat prod/pixi-claims.yaml
+          echo "${{ secrets.PROD_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
           terraform -chdir=${{ github.workspace }}/configs/crossplane apply -auto-approve
         env:
