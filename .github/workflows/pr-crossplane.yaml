@@ -96,7 +96,6 @@ jobs:
           python -m pip install ruamel.yaml
 
           python  scripts/workflows/scripts/patch.py 
-          printenv
           
           for file in *claims.yaml; do
               if [ -f "$file" ]; then
