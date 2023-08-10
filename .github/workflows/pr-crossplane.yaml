@@ -113,6 +113,6 @@ jobs:
         run: |
           echo "${{ secrets.STAGING_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
-          teraform init && terraform -chdir=${{ github.workspace }}/configs/crossplane plan
+          terraform init && terraform -chdir=${{ github.workspace }}/configs/crossplane plan
         env:
           TF_WORKSPACE: ${{ inputs.env }}
