@@ -96,16 +96,18 @@ jobs:
           python -m pip install ruamel.yaml
 
           python  scripts/workflows/scripts/patch.py 
+          printenv
           
           for file in *claims.yaml; do
               if [ -f "$file" ]; then
-                  cat $file
+                  cat $ENV/$file
               fi
           done
 
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
           VAULT_ID: "errsir3kqd4gdjgaxliofyskey"
+          ENV:  ${{ inputs.env }}
 
       - name: Terraform Init
         id: init
