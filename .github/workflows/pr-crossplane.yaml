@@ -97,9 +97,10 @@ jobs:
 
           python  scripts/workflows/scripts/patch.py 
           
+          
           for file in *claims.yaml; do
               if [ -f "$file" ]; then
-                  cat $ENV/$file
+                  cat $file
               fi
           done
 
@@ -108,9 +109,13 @@ jobs:
           VAULT_ID: "errsir3kqd4gdjgaxliofyskey"
           ENV:  ${{ inputs.env }}
 
-      - name: Terraform plan
-        id: apply
+      - name: Terraform Plan
+        id: plan
         run: |
+          cd ${{ github.workspace }}/configs/crossplane
+          ls
+          cat main.tf
+          cat staging/pixi-claims.yaml
           echo "${{ secrets.STAGING_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
           terraform init && terraform -chdir=${{ github.workspace }}/configs/crossplane plan
