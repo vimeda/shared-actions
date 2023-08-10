@@ -69,6 +69,16 @@ jobs:
         run: ls -R
         working-directory: ${{ steps.download.outputs.download-path }}
 
+      - name: Push all functions to Bucket
+        run: |
+          cd ${{ github.workspace }}/dist && ls
+          for file in "./"/*lambda.zip
+          do
+            filename=$(basename "$file" .zip)
+            function_name=${filename%_lambda}
+            aws s3 cp "$file" "s3://${{inputs.env}}-lykon-lambdas/${{ github.event.repository.name}}/$function_name.zip"
+          done
+
 
       - uses: hashicorp/setup-terraform@v1
         with:
@@ -96,28 +106,30 @@ jobs:
           python -m pip install ruamel.yaml
 
           python  scripts/workflows/scripts/patch.py 
-          printenv
           
           for file in *claims.yaml; do
               if [ -f "$file" ]; then
-                  cat $ENV/$file
+                  cat $file
               fi
           done
 
         env:
-          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.PROD_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
           VAULT_ID: "errsir3kqd4gdjgaxliofyskey"
-          ENV:  ${{ inputs.env }}
 
       - name: Terraform Init
         id: init
-        run: terraform -chdir=${{ github.workspace }}/configs/crossplane init
+        run: terraform -chdir=${{ github.workspace }}/configs/crossplane/${{ inputs.env }} init
 
-      - name: Terraform plan
+      - name: Terraform apply
         id: apply
         run: |
-          echo "${{ secrets.STAGING_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
+          cd ${{ github.workspace }}/configs/crossplane
+          ls
+          cat main.tf
+          cat prod/pixi-claims.yaml
+          echo "${{ secrets.PROD_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
-          terraform -chdir=${{ github.workspace }}/configs/crossplane plan
+          terraform -chdir=${{ github.workspace }}/configs/crossplane apply -auto-approve
         env:
           TF_WORKSPACE: ${{ inputs.env }}
