@@ -115,11 +115,7 @@ jobs:
 
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.PROD_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
-          VAULT_ID: "errsir3kqd4gdjgaxliofyskey"
-
-      - name: Terraform Init
-        id: init
-        run: terraform -chdir=${{ github.workspace }}/configs/crossplane/${{ inputs.env }} init
+          VAULT_ID: "37y43e5v2qd3iptgt7wgyk34ga"
 
       - name: Terraform apply
         id: apply
@@ -130,6 +126,6 @@ jobs:
           cat prod/pixi-claims.yaml
           echo "${{ secrets.PROD_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
-          terraform -chdir=${{ github.workspace }}/configs/crossplane apply -auto-approve
+          teraform init && terraform -chdir=${{ github.workspace }}/configs/crossplane apply -auto-approve
         env:
           TF_WORKSPACE: ${{ inputs.env }}

@@ -108,15 +108,11 @@ jobs:
           VAULT_ID: "errsir3kqd4gdjgaxliofyskey"
           ENV:  ${{ inputs.env }}
 
-      - name: Terraform Init
-        id: init
-        run: terraform -chdir=${{ github.workspace }}/configs/crossplane init
-
       - name: Terraform plan
         id: apply
         run: |
           echo "${{ secrets.STAGING_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
-          terraform -chdir=${{ github.workspace }}/configs/crossplane plan
+          teraform init && terraform -chdir=${{ github.workspace }}/configs/crossplane plan
         env:
           TF_WORKSPACE: ${{ inputs.env }}
