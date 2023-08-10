@@ -97,9 +97,10 @@ jobs:
 
           python  scripts/workflows/scripts/patch.py 
           
+          
           for file in *claims.yaml; do
               if [ -f "$file" ]; then
-                  cat $ENV/$file
+                  cat $file
               fi
           done
 
