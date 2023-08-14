@@ -80,9 +80,9 @@ jobs:
           done
 
 
-      - uses: hashicorp/setup-terraform@v1
+      - uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: ~1.0
+          terraform_version: ~1.4
 
       - uses: actions/download-artifact@v2
         id: downloadscripts
@@ -121,11 +121,8 @@ jobs:
         id: apply
         run: |
           cd ${{ github.workspace }}/configs/crossplane
-          ls
-          cat main.tf
-          cat prod/pixi-claims.yaml
-          echo "${{ secrets.PROD_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
+          echo "${{ secrets.STAGING_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
-          terraform init && terraform plan && terraform -chdir=${{ github.workspace }}/configs/crossplane apply -auto-approve
+          terraform init && terraform -chdir=${{ github.workspace }}/configs/crossplane apply -auto-approve
         env:
-          TF_WORKSPACE: prod
+          TF_WORKSPACE: ${{ inputs.env }}
