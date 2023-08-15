@@ -46,8 +46,8 @@ jobs:
         with:
           terraform_version: 1.5.5
 
-      - name: Terraform apply
-        id: apply
+      - name: Terraform Apply - Prod Crossplane
+        id: apply-crossplane
         run: |
           echo "${{ secrets.PROD_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
