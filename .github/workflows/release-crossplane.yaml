@@ -120,9 +120,10 @@ jobs:
       - name: Terraform apply
         id: apply
         run: |
-          cd ${{ github.workspace }}/configs/crossplane
           echo "${{ secrets.PROD_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
-          terraform init && terraform -chdir=${{ github.workspace }}/configs/crossplane apply -auto-approve
+          terraform init
+          ls ${{ github.workspace }} 
+          terraform -chdir=${{ github.workspace }}/configs/crossplane apply -auto-approve
         env:
           TF_WORKSPACE: ${{ inputs.env }}
