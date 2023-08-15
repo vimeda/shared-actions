@@ -21,6 +21,13 @@ jobs:
         working-directory: ${{ inputs.working_directory }}
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ~1.0
+
       - name: Terraform apply
         id: apply
         run: |
