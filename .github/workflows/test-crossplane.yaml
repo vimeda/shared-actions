@@ -1,0 +1,33 @@
+on:
+  workflow_call:
+    inputs: 
+      working_directory:
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+  statuses: write
+  
+jobs:
+  testing:
+    name: Testing Crossplane
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+
+    steps:
+      - name: Terraform apply
+        id: apply
+        run: |
+          echo "${{ secrets.PROD_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
+          export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
+          terraform init
+          ls ${{ github.workspace }} 
+          terraform -chdir=${{ github.workspace }}/configs/crossplane apply -auto-approve
+        env:
+          TF_WORKSPACE: prod
