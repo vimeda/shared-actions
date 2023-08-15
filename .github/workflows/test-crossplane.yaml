@@ -42,7 +42,7 @@ jobs:
           role-session-name: ${{ inputs.role_session_name }}
           aws-region: ${{ inputs.aws_region }}
       
-      - uses: hashicorp/setup-terraform@v1
+      - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ~1.0
 
@@ -51,8 +51,7 @@ jobs:
         run: |
           echo "${{ secrets.PROD_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
-          terraform init
           ls ${{ github.workspace }} 
-          terraform -chdir=${{ github.workspace }}/configs/crossplane apply -auto-approve
+          terraform init && terraform -chdir=${{ github.workspace }}/configs/crossplane apply -auto-approve
         env:
           TF_WORKSPACE: prod
