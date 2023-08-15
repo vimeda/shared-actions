@@ -1,0 +1,58 @@
+on:
+  workflow_call:
+    inputs: 
+      role_name:
+        required: true
+        type: string
+      role_session_name:
+        required: true
+        type: string
+      aws_region:
+        required: false
+        type: string
+        default: eu-central-1 
+      working_directory:
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+  statuses: write
+  
+jobs:
+  testing:
+    name: Testing Crossplane
+    runs-on: self-hosted
+
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+       
+      - name: Configure AWS Credentials
+        id: aws
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ inputs.role_name }}
+          role-session-name: ${{ inputs.role_session_name }}
+          aws-region: ${{ inputs.aws_region }}
+      
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.5
+
+      - name: Terraform Apply - Prod Crossplane
+        id: apply-crossplane
+        run: |
+          echo "${{ secrets.PROD_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
+          export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
+          cd ${{ github.workspace }}/configs/crossplane
+          ls
+          terraform init && terraform apply -auto-approve
+        env:
+          TF_WORKSPACE: prod
