@@ -123,6 +123,6 @@ jobs:
           cd ${{ github.workspace }}/configs/crossplane
           echo "${{ secrets.PROD_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
-          terraform init && terraform -chdir=${{ github.workspace }}/configs/crossplane apply -auto-approve
+          terraform workspace new prod && terraform init && terraform workspace new prod && terraform workspace select prod
         env:
           TF_WORKSPACE: ${{ inputs.env }}
