@@ -124,4 +124,4 @@ jobs:
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
           cd ${{ github.workspace }}/configs/crossplane && terraform init && terraform apply -auto-approve
         env:
-          TF_WORKSPACE: prod
+          TF_WORKSPACE: ${{ inputs.env }}
