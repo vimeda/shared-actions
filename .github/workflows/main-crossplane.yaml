@@ -120,9 +120,12 @@ jobs:
       - name: Terraform apply
         id: apply
         run: |
+          cd ${{ github.workspace }}/configs/crossplane
+          ls
+          cat main.tf
+          cat staging/pixi-claims.yaml
           echo "${{ secrets.STAGING_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
-          ls ${{ github.workspace }} 
-          cd ${{ github.workspace }}/configs/crossplane && terraform init && terraform apply -auto-approve
+          terraform init && terraform -chdir=${{ github.workspace }}/configs/crossplane apply -auto-approve
         env:
           TF_WORKSPACE: ${{ inputs.env }}
