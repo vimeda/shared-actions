@@ -122,8 +122,6 @@ jobs:
         run: |
           echo "${{ secrets.STAGING_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
-          terraform init
-          ls ${{ github.workspace }} 
-          terraform -chdir=${{ github.workspace }}/configs/crossplane apply -auto-approve
+          terraform init && terraform -chdir=${{ github.workspace }}/configs/crossplane apply -auto-approve
         env:
           TF_WORKSPACE: ${{ inputs.env }}
