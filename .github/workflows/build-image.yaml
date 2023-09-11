@@ -81,7 +81,7 @@ jobs:
           ${{ runner.os }}-single-buildx
 
     - name: Build and push application
-      uses: docker/build-push-action@v3
+      uses: docker/build-push-action@v4
       with:
         context: .
         file: ${{ inputs.docker_file_path }}
