@@ -17,6 +17,12 @@ on:
       env:
         required: true
         type: string
+      zip_lambda_workflow_step:
+        required: true
+        type: boolean
+      commit_hash:
+        required: true
+        type: string
 
 permissions:
   id-token: write
@@ -29,7 +35,6 @@ jobs:
     name: Terraform
     runs-on: ubuntu-latest
     timeout-minutes: 15
-
 
     defaults:
       run:
@@ -49,21 +54,27 @@ jobs:
 
       - name: Build lambdas
         run: cd  ${{ github.workspace }} &&  make lambda
+        if: ${{env.zip_lambda_workflow_step==true}}
         env:
           GITHUB_TOKEN: ${{ secrets.GB_TOKEN_PRIVATE }}
           GOPRIVATE: "github.com/vimeda/*"
+          zip_lambda_workflow_step: ${{ inputs.zip_lambda_workflow_step }}
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
+        if: ${{env.zip_lambda_workflow_step==true}}
         with:
           name: srv-lambdas
           path: ${{ github.workspace }}/dist/*
+          zip_lambda_workflow_step: ${{ inputs.zip_lambda_workflow_step }}
 
       - uses: actions/download-artifact@v2
         id: download
+        if: ${{env.zip_lambda_workflow_step==true}}
         with:
           name: srv-lambdas
           path:  ${{ github.workspace }}/dist
+          zip_lambda_workflow_step: ${{ inputs.zip_lambda_workflow_step }}
 
       - name: Display structure of downloaded files
         run: ls -R
@@ -72,7 +83,7 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: ~1.0
+          terraform_version: ~1.4
 
       - uses: actions/download-artifact@v2
         id: downloadscripts
@@ -109,13 +120,23 @@ jobs:
           VAULT_ID: "errsir3kqd4gdjgaxliofyskey"
           ENV:  ${{ inputs.env }}
 
+      - name: patch claim image uri with commit hash
+        id: patch_image_uri_with_commit_hash
+        run: |
+          find ./ -type f -name "*.yaml" -exec sed -i -e 's/COMMIT_HASH/${{ env.commit_hash }}/g' -e 's/ECR_BASE_URL/279707217826.dkr.ecr.eu-central-1.amazonaws.com\/lykon/g' {} \;
+
+
+        env:
+          TF_WORKSPACE: ${{ inputs.env }}
+          zip_lambda_workflow_step: ${{ inputs.zip_lambda_workflow_step }}
+          commit_hash: ${{ inputs.commit_hash }}
+
       - name: Terraform Plan
         id: plan
         run: |
           cd ${{ github.workspace }}/configs/crossplane
           ls
           cat main.tf
-          cat staging/pixi-claims.yaml
           echo "${{ secrets.STAGING_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
           terraform init && terraform -chdir=${{ github.workspace }}/configs/crossplane plan

@@ -37,21 +37,27 @@ def process_file(filename):
         with open(filename, 'r') as file:
             existing_yaml_data_list = list(yaml.safe_load_all(file))
 
-        # Find the 'kind: XLambda' document in the list of documents
-        xlambda_documents = [doc for doc in existing_yaml_data_list if doc.get('kind') == 'XLambda']
+        # Find the 'kind: xLambda or XLambdaDockerImage' document in the list of documents
+        xlambda_documents = [doc for doc in existing_yaml_data_list if doc.get('kind') in ['XLambda', 'XLambdaDockerImage']]
+
 
         if not xlambda_documents:
-            print(f"No 'kind: XLambda' document found in {filename}.")
+            print("not cached")
+            print(f"No 'kind: xLambda or XLambdaDockerImage' document found in {filename}.")
             return
 
-        # Assuming there is only one 'kind: XLambda' document, take the first one
+        # Assuming there is only one 'kind: xLambda or XLambdaDockerImage' document, take the first one
         xlambda_document = xlambda_documents[0]
 
-        # Merge the parsed JSON with the existing YAML for the 'kind: XLambda' document
+        # Merge the parsed JSON with the existing YAML for the 'kind: xLambda or XLambdaDockerImage' document
         parsed_json = json.loads(json_output)
+        print("DEBUG: parse json")
+        print(parsed_json)
         merged_yaml_data = merge_yaml_with_json(xlambda_document, parsed_json['envVariables']['variables'])
 
-        # Update the 'kind: XLambda' document in the list
+        print("after parsed script")
+
+        # Update the 'kind: xLambda or XLambdaDockerImage' document in the list
         existing_yaml_data_list[existing_yaml_data_list.index(xlambda_document)] = merged_yaml_data
 
         # Write the updated YAML back to the file
