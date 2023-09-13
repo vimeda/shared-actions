@@ -17,6 +17,9 @@ on:
       env:
         required: true
         type: string
+      srv_name:
+        required: true
+        type: string
 
 permissions:
   id-token: write
