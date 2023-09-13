@@ -49,18 +49,21 @@ jobs:
 
       - name: Build lambdas
         run: cd  ${{ github.workspace }} &&  make lambda
+        if: contains(fromJson('["order-srv"]'), env.srv_name)
         env:
           GITHUB_TOKEN: ${{ secrets.GB_TOKEN_PRIVATE }}
           GOPRIVATE: "github.com/vimeda/*"
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
+        if: contains(fromJson('["order-srv"]'), env.srv_name)
         with:
           name: srv-lambdas
           path: ${{ github.workspace }}/dist/*
 
       - uses: actions/download-artifact@v2
         id: download
+        if: contains(fromJson('["order-srv"]'), env.srv_name)
         with:
           name: srv-lambdas
           path:  ${{ github.workspace }}/dist
@@ -108,6 +111,15 @@ jobs:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
           VAULT_ID: "errsir3kqd4gdjgaxliofyskey"
           ENV:  ${{ inputs.env }}
+
+      - name: patch claim image uri with commit hash
+        id: patch_image_uri_with_commit_hash
+        if: contains(fromJson('["pdf-srv"]'), env.srv_name)
+        run: |
+          find ./ -type f -name "*.yaml" -exec sed -i 's/COMMIT_HASH/ajjx73dujcjjcjcjjceuue/g' {} \;
+        env:
+          TF_WORKSPACE: ${{ inputs.env }}
+          srv_name: ${{ inputs.env }}
 
       - name: Terraform Plan
         id: plan
