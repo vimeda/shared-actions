@@ -17,7 +17,7 @@ on:
       env:
         required: true
         type: string
-      env.zip_lambda_workflow_step:
+      zip_lambda_workflow_step:
         required: true
         type: boolean
       commit_hash:
@@ -58,6 +58,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GB_TOKEN_PRIVATE }}
           GOPRIVATE: "github.com/vimeda/*"
+          zip_lambda_workflow_step: ${{ inputs.zip_lambda_workflow_step }}
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
@@ -65,6 +66,7 @@ jobs:
         with:
           name: srv-lambdas
           path: ${{ github.workspace }}/dist/*
+          zip_lambda_workflow_step: ${{ inputs.zip_lambda_workflow_step }}
 
       - uses: actions/download-artifact@v2
         id: download
@@ -72,6 +74,7 @@ jobs:
         with:
           name: srv-lambdas
           path:  ${{ github.workspace }}/dist
+          zip_lambda_workflow_step: ${{ inputs.zip_lambda_workflow_step }}
 
       - name: Display structure of downloaded files
         run: ls -R
@@ -124,7 +127,7 @@ jobs:
           find ./ -type f -name "*.yaml" -exec sed -i 's/COMMIT_HASH/ ${{ env.commit_hash }}/g' {} \;
         env:
           TF_WORKSPACE: ${{ inputs.env }}
-          srv_name: ${{ inputs.env }}
+          zip_lambda_workflow_step: ${{ inputs.zip_lambda_workflow_step }}
           commit_hash: ${{ inputs.commit_hash }}
 
       - name: Terraform Plan
