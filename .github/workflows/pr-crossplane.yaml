@@ -54,7 +54,7 @@ jobs:
 
       - name: Build lambdas
         run: cd  ${{ github.workspace }} &&  make lambda
-        if: env.zip_lambda_workflow_step==true
+        if: ${{env.zip_lambda_workflow_step==true}}
         env:
           GITHUB_TOKEN: ${{ secrets.GB_TOKEN_PRIVATE }}
           GOPRIVATE: "github.com/vimeda/*"
@@ -62,7 +62,7 @@ jobs:
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
-        if: env.zip_lambda_workflow_step==true
+        if: ${{env.zip_lambda_workflow_step==true}}
         with:
           name: srv-lambdas
           path: ${{ github.workspace }}/dist/*
@@ -70,7 +70,7 @@ jobs:
 
       - uses: actions/download-artifact@v2
         id: download
-        if: env.zip_lambda_workflow_step==true
+        if: ${{env.zip_lambda_workflow_step==true}}
         with:
           name: srv-lambdas
           path:  ${{ github.workspace }}/dist
@@ -122,7 +122,7 @@ jobs:
 
       - name: patch claim image uri with commit hash
         id: patch_image_uri_with_commit_hash
-        if: env.zip_lambda_workflow_step==true
+        if: ${{env.zip_lambda_workflow_step==true}}
         run: |
           find ./ -type f -name "*.yaml" -exec sed -i 's/COMMIT_HASH/ ${{ env.commit_hash }}/g' {} \;
         env:
