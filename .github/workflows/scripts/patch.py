@@ -40,6 +40,8 @@ def process_file(filename):
         # Find the 'kind: XLambda' document in the list of documents
         xlambda_documents = [doc for doc in existing_yaml_data_list if doc.get('kind') in ['XLambda', 'XLambdaDockerImage']]
 
+        print("not cached")
+
         if not xlambda_documents:
             print(f"No 'kind: XLambda' document found in {filename}.")
             return
