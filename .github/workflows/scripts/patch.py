@@ -38,7 +38,7 @@ def process_file(filename):
             existing_yaml_data_list = list(yaml.safe_load_all(file))
 
         # Find the 'kind: XLambda' document in the list of documents
-        xlambda_documents = [doc for doc in existing_yaml_data_list if doc.get('kind') == 'XLambda']
+        xlambda_documents = [doc for doc in existing_yaml_data_list if doc.get('kind') == ('XLambda'||'XLambdaDockerImage')]
 
         if not xlambda_documents:
             print(f"No 'kind: XLambda' document found in {filename}.")
