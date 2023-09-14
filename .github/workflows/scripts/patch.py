@@ -46,7 +46,7 @@ def process_file(filename):
             print("not cached")
             print(f"No 'kind: XLambda' document found in {filename}.")
             return
-
+        print("from script-->",xlambda_document)
         # Assuming there is only one 'kind: XLambda' document, take the first one
         xlambda_document = xlambda_documents[0]
 
