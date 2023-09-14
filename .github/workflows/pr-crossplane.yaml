@@ -130,7 +130,6 @@ jobs:
           cd ${{ github.workspace }}/configs/crossplane
           ls
           cat main.tf
-          cat staging/pixi-claims.yaml
           echo "${{ secrets.STAGING_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
           terraform init && terraform -chdir=${{ github.workspace }}/configs/crossplane plan
