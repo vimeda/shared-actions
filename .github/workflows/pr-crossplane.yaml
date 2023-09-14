@@ -121,10 +121,11 @@ jobs:
         id: patch_image_uri_with_commit_hash
         if: contains(fromJson('["pdf-srv"]'), env.srv_name)
         run: |
-          find ./ -type f -name "*.yaml" -exec sed -i 's/COMMIT_HASH/ ${{ inputs.commit_hash }}/g' {} \;
+          find ./ -type f -name "*.yaml" -exec sed -i 's/COMMIT_HASH/ ${{ env.commit_hash }}/g' {} \;
         env:
           TF_WORKSPACE: ${{ inputs.env }}
           srv_name: ${{ inputs.env }}
+          commit_hash: ${{ inputs.commit_hash }}
 
       - name: Terraform Plan
         id: plan
