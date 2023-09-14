@@ -19,7 +19,7 @@ on:
         type: string
       zip_lambda_workflow_step:
         required: true
-        type: string
+        type: boolean
       commit_hash:
         required: true
         type: string
