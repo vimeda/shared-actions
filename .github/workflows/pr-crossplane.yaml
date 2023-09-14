@@ -20,6 +20,9 @@ on:
       srv_name:
         required: true
         type: string
+      commit_hash:
+        required: true
+        type: string
 
 permissions:
   id-token: write
@@ -32,7 +35,6 @@ jobs:
     name: Terraform
     runs-on: ubuntu-latest
     timeout-minutes: 15
-
 
     defaults:
       run:
@@ -119,7 +121,7 @@ jobs:
         id: patch_image_uri_with_commit_hash
         if: contains(fromJson('["pdf-srv"]'), env.srv_name)
         run: |
-          find ./ -type f -name "*.yaml" -exec sed -i 's/COMMIT_HASH/ajjx73dujcjjcjcjjceuue/g' {} \;
+          find ./ -type f -name "*.yaml" -exec sed -i 's/COMMIT_HASH/ ${{ inputs.commit_hash }}/g' {} \;
         env:
           TF_WORKSPACE: ${{ inputs.env }}
           srv_name: ${{ inputs.env }}
