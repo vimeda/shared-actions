@@ -123,8 +123,8 @@ jobs:
       - name: patch claim image uri with commit hash
         id: patch_image_uri_with_commit_hash
         run: |
-          find ./ -type f -name "*.yaml" -exec sed -i 's/COMMIT_HASH/ ${{ env.commit_hash }}/g' {} \;
-          find ./ -type f -name "*.yaml" -exec sed -i 's/ECR_BASE_URL/https:\/\/279707217826.dkr.ecr.eu-central-1.amazonaws.com\/lykon/g' {} \;
+          find ./ -type f -name "*.yaml" -exec sed -i -e 's/COMMIT_HASH/${{ env.commit_hash }}/g' -e 's/ECR_BASE_URL/https:\/\/279707217826.dkr.ecr.eu-central-1.amazonaws.com\/lykon/g' {} \;
+
 
         env:
           TF_WORKSPACE: ${{ inputs.env }}
