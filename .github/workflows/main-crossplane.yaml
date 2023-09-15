@@ -82,6 +82,7 @@ jobs:
         working-directory: ${{ steps.download.outputs.download-path }}
 
       - name: Push all functions to Bucket
+        if: ${{env.zip_lambda_workflow_step==true}}
         run: |
           cd ${{ github.workspace }}/dist && ls
           for file in "./"/*lambda.zip
@@ -90,6 +91,8 @@ jobs:
             function_name=${filename%_lambda}
             aws s3 cp "$file" "s3://${{inputs.env}}-lykon-lambdas/${{ github.event.repository.name}}/$function_name.zip"
           done
+        env:
+          zip_lambda_workflow_step: ${{ inputs.zip_lambda_workflow_step }}
 
 
       - uses: hashicorp/setup-terraform@v1
@@ -124,7 +127,6 @@ jobs:
                   cat $file
               fi
           done
-
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
           VAULT_ID: "errsir3kqd4gdjgaxliofyskey"
