@@ -54,7 +54,7 @@ jobs:
           GOPRIVATE: "github.com/vimeda/*"
 
       - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: srv-lambdas
           path: ${{ github.workspace }}/dist/*

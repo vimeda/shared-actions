@@ -61,7 +61,7 @@ jobs:
           zip_lambda_workflow_step: ${{ inputs.zip_lambda_workflow_step }}
 
       - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: ${{env.zip_lambda_workflow_step==true}}
         with:
           name: srv-lambdas
