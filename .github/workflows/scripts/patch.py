@@ -35,7 +35,7 @@ def process_file(filename):
 
         # Load the existing YAML file with multiple documents
         with open(filename, 'r') as file:
-            existing_yaml_data_list = list(yaml.safe_load_all(file))
+            existing_yaml_data_list = list(yaml.load_all(file))
 
         # Find the 'kind: xLambda or XLambdaDockerImage' document in the list of documents
         xlambda_documents = [doc for doc in existing_yaml_data_list if doc.get('kind') in ['XLambda', 'XLambdaDockerImage']]
