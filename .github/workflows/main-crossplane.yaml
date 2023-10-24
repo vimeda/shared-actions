@@ -118,7 +118,7 @@ jobs:
           sudo mv op /usr/local/bin
           rm op.zip
           ls
-          python -m pip install ruamel.yaml
+          python -m pip install "ruamel.yaml<0.18.0"
 
           python  scripts/workflows/scripts/patch.py 
           
