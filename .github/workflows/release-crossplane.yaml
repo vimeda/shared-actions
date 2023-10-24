@@ -59,7 +59,7 @@ jobs:
           name: srv-lambdas
           path: ${{ github.workspace }}/dist/*
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         id: download
         with:
           name: srv-lambdas
@@ -84,7 +84,7 @@ jobs:
         with:
           terraform_version: ~1.4
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         id: downloadscripts
         with:
           name: scripts
