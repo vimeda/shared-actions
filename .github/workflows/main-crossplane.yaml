@@ -95,7 +95,7 @@ jobs:
           zip_lambda_workflow_step: ${{ inputs.zip_lambda_workflow_step }}
 
 
-      - uses: hashicorp/setup-terraform@v1
+      - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ~1.4
 
