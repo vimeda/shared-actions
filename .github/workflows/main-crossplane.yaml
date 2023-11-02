@@ -23,6 +23,9 @@ on:
       commit_hash:
         required: true
         type: string
+      is_lambda_workflow:
+        required: true
+        type: string
 
 permissions:
   id-token: write
