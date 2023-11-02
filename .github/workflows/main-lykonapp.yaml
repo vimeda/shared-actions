@@ -50,19 +50,19 @@ jobs:
           role-session-name: ${{ inputs.role_session_name }}
           aws-region: ${{ inputs.aws_region }}
 
-      - name: patch claim image uri with commit hash
-        id: patch_image_uri_with_commit_hash
-        run: |
-          find ./ -type f -name "*.yaml" -exec sed -i -e 's/COMMIT_HASH/${{ env.commit_hash }}/g' -e 's/ECR_BASE_URL/279707217826.dkr.ecr.eu-central-1.amazonaws.com\/lykon/g' {} \;
-        env:
-          TF_WORKSPACE: ${{ inputs.env }}
-          commit_hash: ${{ inputs.commit_hash }}
-
-      - name: Terraform apply
-        id: apply
-        run: |
-          echo "${{ secrets.STAGING_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
-          export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
-           cd ${{ github.workspace }}/configs/crossplane && terraform init && terraform -chdir=${{ github.workspace }}/configs/crossplane apply -auto-approve
-        env:
-          TF_WORKSPACE: ${{ inputs.env }}
+#      - name: patch claim image uri with commit hash
+#        id: patch_image_uri_with_commit_hash
+#        run: |
+#          find ./ -type f -name "*.yaml" -exec sed -i -e 's/COMMIT_HASH/${{ env.commit_hash }}/g' -e 's/ECR_BASE_URL/279707217826.dkr.ecr.eu-central-1.amazonaws.com\/lykon/g' {} \;
+#        env:
+#          TF_WORKSPACE: ${{ inputs.env }}
+#          commit_hash: ${{ inputs.commit_hash }}
+#
+#      - name: Terraform apply
+#        id: apply
+#        run: |
+#          echo "${{ secrets.STAGING_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
+#          export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
+#           cd ${{ github.workspace }}/configs/crossplane && terraform init && terraform -chdir=${{ github.workspace }}/configs/crossplane apply -auto-approve
+#        env:
+#          TF_WORKSPACE: ${{ inputs.env }}
