@@ -25,7 +25,7 @@ on:
         type: string
       is_lambda_workflow:
         required: true
-        type: string
+        type: boolean
 
 permissions:
   id-token: write
