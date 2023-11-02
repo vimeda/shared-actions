@@ -109,7 +109,7 @@ jobs:
           name: scripts
           path: ./scripts
         env:
-          is_lambda_workflow: {{inputs.is_lambda_workflow}}
+          is_lambda_workflow: ${{inputs.is_lambda_workflow}}
 
       - name: copy scripts to scripts folder in working directory
         if: ${{env.is_lambda_workflow==true}}
@@ -118,7 +118,7 @@ jobs:
           cp -r ${{ github.workspace }}/scripts/.github/workflows ./scripts
         shell: sh
         env:
-          is_lambda_workflow: {{inputs.is_lambda_workflow}}
+          is_lambda_workflow: ${{inputs.is_lambda_workflow}}
 
       - name: Install 1Password Cli, patch claim
         if: ${{env.is_lambda_workflow==true}}
@@ -140,7 +140,7 @@ jobs:
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
           VAULT_ID: "errsir3kqd4gdjgaxliofyskey"
-          is_lambda_workflow: {{inputs.is_lambda_workflow}}
+          is_lambda_workflow: ${{inputs.is_lambda_workflow}}
 
       - name: patch claim image uri with commit hash
         if: ${{env.is_lambda_workflow==true}}
@@ -150,7 +150,7 @@ jobs:
         env:
           TF_WORKSPACE: ${{ inputs.env }}
           commit_hash: ${{ inputs.commit_hash }}
-          is_lambda_workflow: {{inputs.is_lambda_workflow}}
+          is_lambda_workflow: ${{inputs.is_lambda_workflow}}
 
       - name: Terraform apply
         id: apply
