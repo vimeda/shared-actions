@@ -101,17 +101,24 @@ jobs:
 
       - uses: actions/download-artifact@v2
         id: downloadscripts
+        if: ${{env.is_lambda_workflow==true}}
         with:
           name: scripts
           path: ./scripts
+        env:
+          is_lambda_workflow: {{inputs.is_lambda_workflow}}
 
       - name: copy scripts to scripts folder in working directory
+        if: ${{env.is_lambda_workflow==true}}
         run: |
           mkdir ./scripts && ls
           cp -r ${{ github.workspace }}/scripts/.github/workflows ./scripts
         shell: sh
+        env:
+          is_lambda_workflow: {{inputs.is_lambda_workflow}}
 
       - name: Install 1Password Cli, patch claim
+        if: ${{env.is_lambda_workflow==true}}
         run: |
           curl https://cache.agilebits.com/dist/1P/op2/pkg/v2.18.0/op_linux_amd64_v2.18.0.zip > op.zip
           unzip op.zip
@@ -130,14 +137,17 @@ jobs:
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
           VAULT_ID: "errsir3kqd4gdjgaxliofyskey"
+          is_lambda_workflow: {{inputs.is_lambda_workflow}}
 
       - name: patch claim image uri with commit hash
+        if: ${{env.is_lambda_workflow==true}}
         id: patch_image_uri_with_commit_hash
         run: |
           find ./ -type f -name "*.yaml" -exec sed -i -e 's/COMMIT_HASH/${{ env.commit_hash }}/g' -e 's/ECR_BASE_URL/279707217826.dkr.ecr.eu-central-1.amazonaws.com\/lykon/g' {} \;
         env:
           TF_WORKSPACE: ${{ inputs.env }}
           commit_hash: ${{ inputs.commit_hash }}
+          is_lambda_workflow: {{inputs.is_lambda_workflow}}
 
       - name: Terraform apply
         id: apply
