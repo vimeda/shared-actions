@@ -142,11 +142,22 @@ jobs:
           VAULT_ID: "errsir3kqd4gdjgaxliofyskey"
           is_lambda_workflow: ${{inputs.is_lambda_workflow}}
 
-      - name: patch claim image uri with commit hash
+      - name: patch claim image uri with commit hash for LykonLambdas
         if: ${{env.is_lambda_workflow==true}}
         id: patch_image_uri_with_commit_hash
         run: |
           find ./ -type f -name "*.yaml" -exec sed -i -e 's/COMMIT_HASH/${{ env.commit_hash }}/g' -e 's/ECR_BASE_URL/279707217826.dkr.ecr.eu-central-1.amazonaws.com\/lykon/g' {} \;
+        env:
+          TF_WORKSPACE: ${{ inputs.env }}
+          commit_hash: ${{ inputs.commit_hash }}
+          is_lambda_workflow: ${{inputs.is_lambda_workflow}}
+
+      - name: patch claim image uri with commit hash for LykonApps
+        if: ${{env.is_lambda_workflow==false}}
+        id: patch_image_uri_with_commit_hash_lykon_apps
+        run: |
+          imageUri="279707217826.dkr.ecr.eu-central-1.amazonaws.com/lykon/${{context.repo.repo}}:$${{ inputs.commit_hash }}"
+          sed -i "/parameters:/a \ \ \ \ image: \"$imageUri\"" app/main.yaml
         env:
           TF_WORKSPACE: ${{ inputs.env }}
           commit_hash: ${{ inputs.commit_hash }}
