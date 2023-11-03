@@ -156,6 +156,7 @@ jobs:
         id: patch_image_uri_with_commit_hash_lykon_apps
         run: |
           ls
+          env
           imageUri="279707217826.dkr.ecr.eu-central-1.amazonaws.com/lykon/${{ github.event.repository.name}}:$${{ inputs.commit_hash }}"
           sed -i "/parameters:/a \ \ \ \ image: \"$imageUri\"" app/main.yaml
         env:
