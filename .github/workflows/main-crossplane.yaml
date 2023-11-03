@@ -153,7 +153,6 @@ jobs:
           is_lambda_workflow: ${{inputs.is_lambda_workflow}}
 
       - name: patch claim image uri with commit hash for LykonApps
-        if: ${{env.is_lambda_workflow==false}}
         id: patch_image_uri_with_commit_hash_lykon_apps
         run: |
           ls
