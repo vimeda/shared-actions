@@ -55,7 +55,7 @@ jobs:
 
       - name: Build lambdas
         run: cd  ${{ github.workspace }} &&  make lambda
-        if: ${{env.zip_lambda_workflow_step==true}}
+        if: ${{env.zip_lambda_workflow_step == true}} ||  ${{env.zip_lambda_workflow_step == 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GB_TOKEN_PRIVATE }}
           GOPRIVATE: "github.com/vimeda/*"
@@ -63,7 +63,7 @@ jobs:
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v2
-        if: ${{env.zip_lambda_workflow_step==true}}
+        if: ${{env.zip_lambda_workflow_step == true}} ||  ${{env.zip_lambda_workflow_step == 'true' }}
         with:
           name: srv-lambdas
           path: ${{ github.workspace }}/dist/*
@@ -71,7 +71,7 @@ jobs:
 
       - uses: actions/download-artifact@v2
         id: download
-        if: ${{env.zip_lambda_workflow_step==true}}
+        if: ${{env.zip_lambda_workflow_step == true}} ||  ${{env.zip_lambda_workflow_step == 'true' }}
         with:
           name: srv-lambdas
           path:  ${{ github.workspace }}/dist
@@ -82,7 +82,7 @@ jobs:
         working-directory: ${{ steps.download.outputs.download-path }}
 
       - name: Push all functions to Bucket
-        if: ${{env.zip_lambda_workflow_step==true}}
+        if: ${{env.zip_lambda_workflow_step == true}} ||  ${{env.zip_lambda_workflow_step == 'true' }}
         run: |
           cd ${{ github.workspace }}/dist && ls
           for file in "./"/*lambda.zip
