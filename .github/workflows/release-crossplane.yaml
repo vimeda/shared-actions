@@ -54,12 +54,12 @@ jobs:
           GOPRIVATE: "github.com/vimeda/*"
 
       - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: srv-lambdas
           path: ${{ github.workspace }}/dist/*
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         id: download
         with:
           name: srv-lambdas
@@ -84,7 +84,7 @@ jobs:
         with:
           terraform_version: ~1.4
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         id: downloadscripts
         with:
           name: scripts
