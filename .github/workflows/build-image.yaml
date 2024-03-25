@@ -28,7 +28,7 @@ on:
       provenance:
         required: false
         type: boolean
-        default: true
+        default: false
 
 permissions:
   id-token: write
