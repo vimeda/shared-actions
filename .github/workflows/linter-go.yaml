@@ -27,7 +27,7 @@ jobs:
       # Run Linter against code base #
       ################################
       - name: Lint Code Base
-        uses: github/super-linter/slim@v4
+        uses: github/super-linter/slim@v5
         env:
           GOPRIVATE: github.com/vimeda/*
           DEFAULT_BRANCH: ${{ inputs.main_branch }}
