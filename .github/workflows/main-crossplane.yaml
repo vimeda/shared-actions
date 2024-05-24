@@ -85,7 +85,7 @@ jobs:
         if: ${{env.zip_lambda_workflow_step == true}} ||  ${{env.zip_lambda_workflow_step == 'true' }}
         run: |
           cd ${{ github.workspace }}/dist && ls
-          for file in "./"/*lambda.zip
+          for file in "./"/*.zip
           do
             filename=$(basename "$file" .zip)
             function_name=${filename%_lambda}
