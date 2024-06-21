@@ -1,0 +1,69 @@
+on:
+  workflow_call:
+    inputs:
+      role_name:
+        required: true
+        type: string
+      role_session_name:
+        required: true
+        type: string
+      aws_region:
+        type: string
+        required: false
+        default: eu-central-1
+      working_directory:
+        required: true
+        type: string
+      resource_address:
+        required: true
+        type: string
+      resource_id:
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+  statuses: write
+
+jobs:
+  terraform-import:
+    name: Terraform Import
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        id: aws
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ inputs.role_name }}
+          role-session-name: ${{ inputs.role_session_name }}
+          aws-region: ${{ inputs.aws_region }}
+
+      - name: Download Prod Variables
+        uses: actions/download-artifact@v3
+        with:
+          name: prod-variables
+          path: ${{ inputs.working_directory }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ~1.0
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Terraform Import Resource
+        id: import
+        run: terraform import '${{ inputs.resource_address }}' '${{ inputs.resource_id }}'
