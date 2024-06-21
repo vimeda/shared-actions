@@ -67,3 +67,11 @@ jobs:
       - name: Terraform Import Resource
         id: import
         run: terraform import '${{ inputs.resource_address }}' '${{ inputs.resource_id }}'
+
+      - name: Terraform Prod Apply
+        id: apply-prod
+        run: terraform apply -auto-approve -input=false -var-file=prod.tfvars.json
+        timeout-minutes: 15
+        env:
+          TF_WORKSPACE: prod
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
