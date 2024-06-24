@@ -20,6 +20,9 @@ on:
       resource_id:
         required: true
         type: string
+      vars_file_name:
+        required: true
+        type: string
 
 permissions:
   id-token: write
@@ -66,7 +69,7 @@ jobs:
 
       - name: Terraform Import Resource
         id: import
-        run: terraform import '${{ inputs.resource_address }}' '${{ inputs.resource_id }}'
+        run: terraform import '${{ inputs.resource_address }}' -var-file='${{ inputs.vars_file_name }}' '${{ inputs.resource_id }}'
 
       - name: Terraform Prod Apply
         id: apply-prod
