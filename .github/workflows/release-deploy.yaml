@@ -63,7 +63,7 @@ jobs:
       with:
         helm: helm3
         chart: lykon-charts/lykon-service
-        chart-version: "0.12.16"
+        chart-version: "0.12.21"
         track: stable
         version: ${{ github.sha }}
         token: ${{ github.token }}
