@@ -14,7 +14,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Self-hosted Renovate
+      - name: ubuntu-latest Renovate
         uses: renovatebot/github-action@v32.118.0
         with:
           configurationFile: ${{ inputs.renovate_file_path }}
