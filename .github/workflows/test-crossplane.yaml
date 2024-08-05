@@ -24,7 +24,7 @@ permissions:
 jobs:
   testing:
     name: Testing Crossplane
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     defaults:
       run:
