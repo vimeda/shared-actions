@@ -1,0 +1,77 @@
+on:
+  workflow_call:
+    inputs:
+      role_name:
+        required: true
+        type: string
+      role_session_name:
+        required: true
+        type: string
+      aws_region:
+        required: false
+        type: string
+        default: eu-central-1
+      env:
+        required: true
+        type: string
+      namespace:
+        required: true
+        type: string
+      release_name:
+        required: true
+        type: string
+      image_tag:
+        required: true
+        type: string
+      working_directory:
+        required: true
+        type: string
+        default: configs/crossplane
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+  statuses: write
+
+jobs:
+  terraform:
+    name: Terraform
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        id: aws
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ inputs.role_name }}
+          role-session-name: ${{ inputs.role_session_name }}
+          aws-region: ${{ inputs.aws_region }}
+
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ~1.4
+      - name: Create Kubeconfig file for staging
+        run: 'echo "$STAGING_KUBECONFIG" > /home/runner/config'
+        shell: bash
+        env:
+          STAGING_KUBECONFIG: ${{secrets.STAGING_KUBECONFIG}}
+
+      - name: Terraform apply
+        id: apply
+        run: |
+          echo "${{ secrets.STAGING_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
+          export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
+           cd ${{ github.workspace }}/configs/crossplane && terraform init && terraform -chdir=${{ github.workspace }}/configs/crossplane apply -auto-approve
+        env:
+          TF_WORKSPACE: ${{ inputs.env }}
+          TF_VAR_image_tag: ${{ inputs.image_tag }}
+
