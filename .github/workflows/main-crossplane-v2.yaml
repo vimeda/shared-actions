@@ -52,12 +52,10 @@ jobs:
         id: aws
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role_name: github-actions-${{release_name}}-role
+          role_name: github-actions-${{inputs.release_name}}-role
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ inputs.role_name }}
-          role-session-name: ga-${{release_name}}
+          role-session-name: ga-${{inputs.release_name}}
           aws-region: eu-central-1
-        env:
-          release_name: ${{ inputs.release_name }}
 
       - uses: hashicorp/setup-terraform@v1
         with:
