@@ -56,6 +56,8 @@ jobs:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ inputs.role_name }}
           role-session-name: ga-${{release_name}}
           aws-region: eu-central-1
+        env:
+          release_name: ${{ inputs.release_name }}
 
       - uses: hashicorp/setup-terraform@v1
         with:
