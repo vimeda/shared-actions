@@ -61,14 +61,14 @@ jobs:
           zip_lambda_workflow_step: ${{ inputs.zip_lambda_workflow_step }}
 
       - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: ${{env.zip_lambda_workflow_step==true}}
         with:
           name: srv-lambdas
           path: ${{ github.workspace }}/dist/*
           zip_lambda_workflow_step: ${{ inputs.zip_lambda_workflow_step }}
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         id: download
         if: ${{env.zip_lambda_workflow_step==true}}
         with:
@@ -85,7 +85,7 @@ jobs:
         with:
           terraform_version: ~1.4
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         id: downloadscripts
         with:
           name: scripts
@@ -106,9 +106,9 @@ jobs:
           ls
           python -m pip install "ruamel.yaml<0.18.0"
 
-          python  scripts/workflows/scripts/patch.py 
-          
-          
+          python  scripts/workflows/scripts/patch.py
+
+
           for file in *claims.yaml; do
               if [ -f "$file" ]; then
                   cat $file
