@@ -1,12 +1,6 @@
 on:
   workflow_call:
     inputs:
-      role_name:
-        required: true
-        type: string
-      role_session_name:
-        required: true
-        type: string
       aws_region:
         required: false
         type: string
