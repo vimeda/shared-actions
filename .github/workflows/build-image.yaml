@@ -55,7 +55,7 @@ jobs:
 
     - name: Docker meta Service
       id: metadata-srv
-      uses: docker/metadata-action@v4
+      uses: docker/metadata-action@v5
       with:
         images: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ inputs.aws_region }}.amazonaws.com/lykon/${{ inputs.ecr_repo_name }}
         flavor: |
