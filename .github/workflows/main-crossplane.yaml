@@ -69,6 +69,11 @@ jobs:
           path: ${{ github.workspace }}/dist/*
           zip_lambda_workflow_step: ${{ inputs.zip_lambda_workflow_step }}
 
+      - name: copy scripts to scripts folder in working directory
+        run: |
+          sudo apt-get install tree
+          tree  ${{ github.workspace }}/scripts/.github/workflows
+
       - name: Copy scripts to scripts folder in working directory
         run: |
           mkdir -p ./scripts && cp -r ${{ github.workspace }}/scripts/.github/workflows/* ./scripts
