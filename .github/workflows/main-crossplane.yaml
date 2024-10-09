@@ -72,7 +72,7 @@ jobs:
       - name: copy scripts to scripts folder in working directory
         run: |
           sudo apt-get install tree
-          tree  ${{ github.workspace }}/scripts/.github/workflows
+          tree  ${{ github.workspace }}/
 
       - name: Copy scripts to scripts folder in working directory
         run: |
