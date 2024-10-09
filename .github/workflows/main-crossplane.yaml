@@ -99,17 +99,17 @@ jobs:
         with:
           terraform_version: ~1.4
 
-      - uses: actions/download-artifact@v4
-        id: downloadscripts
-        with:
-          name: scripts
-          path: ./scripts
-
-      - name: copy scripts to scripts folder in working directory
-        run: |
-          mkdir ./scripts && ls
-          cp -r ${{ github.workspace }}/scripts/.github/workflows ./scripts
-        shell: sh
+#      - uses: actions/download-artifact@v4
+#        id: downloadscripts
+#        with:
+#          name: scripts
+#          path: ./scripts
+#
+#      - name: copy scripts to scripts folder in working directory
+#        run: |
+#          mkdir ./scripts && ls
+#          cp -r ${{ github.workspace }}/scripts/.github/workflows ./scripts
+#        shell: sh
 
       - name: Install 1Password Cli, patch claim
         run: |
@@ -120,7 +120,7 @@ jobs:
           ls
           python -m pip install "ruamel.yaml<0.18.0"
 
-          python  scripts/workflows/scripts/patch.py 
+          python  scripts/.github/workflow/patch.py 
           
           for file in *claims.yaml; do
               if [ -f "$file" ]; then
