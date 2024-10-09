@@ -1,0 +1,33 @@
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      service_name:
+        required: true
+        type: string
+
+jobs:
+  crossplane-terraform:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      -
+        name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          path: ./${{ inputs.service_name }}
+      -
+        name: Get Terraform config
+        uses: actions/checkout@v4
+        with:
+          repository: vimeda/shared-actions
+          path: ./crossplane
+      -
+        name: Testings
+        run: |
+          ls -la
+          ls -la ./crossplane
+          ls -la ./${{ inputs.service_name }}
