@@ -75,6 +75,13 @@ jobs:
           name: scripts
           path: ./scripts
 
+
+
+      - name: copy scripts to scripts folder in working directory
+        run: |
+          sudo apt-get install tree
+          tree /home/runner/work/order-srv/order-srv
+
       - name: copy scripts to scripts folder in working directory
         run: |
           mkdir ./scripts && ls
