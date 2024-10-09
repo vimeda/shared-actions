@@ -70,6 +70,18 @@ jobs:
           zip_lambda_workflow_step: ${{ inputs.zip_lambda_workflow_step }}
 
       - uses: actions/download-artifact@v4
+        id: downloadscripts
+        with:
+          name: scripts
+          path: ./scripts
+
+      - name: copy scripts to scripts folder in working directory
+        run: |
+          mkdir ./scripts && ls
+          cp -r ${{ github.workspace }}/scripts/.github/workflows ./scripts
+        shell: sh
+
+      - uses: actions/download-artifact@v4
         id: download
         if: ${{env.zip_lambda_workflow_step == true}} ||  ${{env.zip_lambda_workflow_step == 'true' }}
         with:
@@ -99,32 +111,6 @@ jobs:
         with:
           terraform_version: ~1.4
 
-      - name: Upload shared scripts folder as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: shared-scripts
-          path: ./scripts
-
-      - name: Download shared scripts folder to new directory
-        uses: actions/download-artifact@v4
-        with:
-          name: shared-scripts
-          path: ./new-scripts
-
-      - name: Display structure of the downloaded shared scripts folder
-        run: ls -R ./new-scripts
-
-#      - uses: actions/download-artifact@v4
-#        id: downloadscripts
-#        with:
-#          name: scripts
-#          path: ./scripts
-#
-#      - name: copy scripts to scripts folder in working directory
-#        run: |
-#          mkdir ./scripts && ls
-#          cp -r ${{ github.workspace }}/scripts/.github/workflows ./scripts
-#        shell: sh
 
       - name: Install 1Password CLI and patch claim
         run: |
