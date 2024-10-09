@@ -69,6 +69,24 @@ jobs:
           path: ${{ github.workspace }}/dist/*
           zip_lambda_workflow_step: ${{ inputs.zip_lambda_workflow_step }}
 
+      - name: copy scripts to scripts folder in working directory
+        run: |
+          sudo apt-get install tree
+          tree  ${{ github.workspace }}/
+
+      - name: Copy scripts to scripts folder in working directory
+        run: |
+          mkdir -p ./scripts && cp -r ${{ github.workspace }}/scripts/.github/workflows/* ./scripts
+        shell: sh
+
+
+
+      - name: copy scripts to scripts folder in working directory
+        run: |
+          sudo apt-get install tree
+          tree /home/runner/work/order-srv/order-srv
+
+
       - uses: actions/download-artifact@v4
         id: download
         if: ${{env.zip_lambda_workflow_step == true}} ||  ${{env.zip_lambda_workflow_step == 'true' }}
@@ -99,32 +117,29 @@ jobs:
         with:
           terraform_version: ~1.4
 
-      - uses: actions/download-artifact@v4
-        id: downloadscripts
-        with:
-          name: scripts
-          path: ./scripts
 
-      - name: copy scripts to scripts folder in working directory
+      - name: Install 1Password CLI and patch claim
         run: |
-          mkdir ./scripts && ls
-          cp -r ${{ github.workspace }}/scripts/.github/workflows ./scripts
-        shell: sh
-
-      - name: Install 1Password Cli, patch claim
-        run: |
-          curl https://cache.agilebits.com/dist/1P/op2/pkg/v2.18.0/op_linux_amd64_v2.18.0.zip > op.zip
+          # Download and unzip 1Password CLI
+          curl https://cache.agilebits.com/dist/1P/op2/pkg/v2.18.0/op_linux_amd64_v2.18.0.zip -o op.zip
           unzip op.zip
           sudo mv op /usr/local/bin
           rm op.zip
-          ls
-          python -m pip install "ruamel.yaml<0.18.0"
-
-          python  scripts/workflows/scripts/patch.py 
           
+          # Setup Python environment using a virtual environment
+          python3 -m venv venv
+          source venv/bin/activate
+          
+          # Install the necessary Python package in the virtual environment
+          pip install "ruamel.yaml<0.18.0"
+          
+          # Run the patch.py script from the scripts folder
+          python scripts/.github/workflows/patch.py
+          
+          # Display contents of the YAML files
           for file in *claims.yaml; do
               if [ -f "$file" ]; then
-                  cat $file
+                  cat "$file"
               fi
           done
         env:
