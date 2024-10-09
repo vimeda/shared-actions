@@ -8,6 +8,12 @@ on:
         required: true
         type: string
 
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+  statuses: write
+
 jobs:
   crossplane-terraform:
     runs-on: ubuntu-latest
@@ -15,19 +21,45 @@ jobs:
 
     steps:
       -
-        name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          path: ./${{ inputs.service_name }}
-      -
-        name: Get Terraform config
+        name: Checkout shared-actions
         uses: actions/checkout@v4
         with:
           repository: vimeda/shared-actions
-          path: ./crossplane
+          path: ./scripts
+          ref: feature/shared-crossplane
       -
-        name: Testings
+        name: Checkout service
+        uses: actions/checkout@v4
+        with:
+          path: ./scripts/${{ inputs.service_name }}
+      -
+        name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-${{ inputs.service_name }}-role
+          role-session-name: ga-${{ inputs.service_name }}
+          aws-region: eu-central-1
+      -
+        name: Install Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ~1.9
+      -
+        name: Terraform Init
+        working-directory: ./scripts/crossplane
         run: |
-          ls -la
-          ls -la ./crossplane
-          ls -la ./${{ inputs.service_name }}
+          terraform init
+      -
+        name: Terraform Validate
+        working-directory: ./scripts/crossplane
+        run: |
+          terraform validate -no-color
+      -
+        name: Terraform Plan
+        working-directory: ./scripts/crossplane
+        run: |
+          terraform plan -no-color -var-file=${{ inputs.environment }}.tfvars \
+            -var="commit_hash=${{ github.sha }}" \
+            -var="service_name=${{ inputs.service_name }}"
+        env:
+          TF_WORKSPACE: ${{ inputs.environment }}

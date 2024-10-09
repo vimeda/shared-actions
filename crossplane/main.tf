@@ -1,41 +1,43 @@
-data "template_file" "claim" {
-  template = file("templates/go-app.yaml")
+data "template_file" "claims" {
+  for_each = fileset("${var.service_name}/configs/crossplane/${terraform.workspace}", "*.yaml")
+  template = file(each.value)
 }
 
 locals {
-  original_yaml = yamldecode(data.template_file.claim.rendered)
-
-  updated_yaml_map = merge(
-    local.original_yaml,
-    {
-      spec = {
-        parameters = merge(
-          local.original_yaml["spec"]["parameters"],
-          {
-            image_tag = var.image_tag
-            vault_id = terraform.workspace == "staging" ? "errsir3kqd4gdjgaxliofyskey" : "37y43e5v2qd3iptgt7wgyk34ga" //TODO add this globally as secret
-          }
-        )
+  updated_yaml_maps = [
+    for claim in data.template_file.claims : merge(
+      yamldecode(claim.rendered),
+      {
+        spec = {
+          parameters = merge(
+            lookup(yamldecode(claim.rendered), "spec", {})["parameters"],
+            {
+              image_tag = var.commit_hash,
+              vault_id  = var.vault_id,
+            }
+          )
+        }
       }
-    }
-  )
+    )
+  ]
 
-  updated_yaml = yamlencode(local.updated_yaml_map)
+  updated_yaml = join("\n---\n", [ for yaml_map in local.updated_yaml_maps : yamlencode(yaml_map) ])
 }
 
-data "template_file" "updated_claim" {
-  template = local.updated_yaml
+resource "local_file" "output_yaml" {
+  filename = "${var.service_name}/configs/crossplane/${terraform.workspace}/combined.yaml"
+  content  = local.updated_yaml
 }
 
-data "kubectl_file_documents" "claim" {
-  content = data.template_file.updated_claim.rendered
+data "kubectl_file_documents" "claims" {
+  content = local.updated_yaml
 }
 
 resource "kubectl_manifest" "claim" {
-  for_each  = data.kubectl_file_documents.claim.manifests
+  for_each  = data.kubectl_file_documents.claims.manifests
   yaml_body = each.value
 }
 
-output "updated_claim" {
-  value = data.template_file.updated_claim.rendered
+output "updated_claims" {
+  value = local.updated_yaml
 }
