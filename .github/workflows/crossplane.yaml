@@ -31,6 +31,7 @@ jobs:
         name: Checkout service
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.ref }}
           path: ./scripts/${{ inputs.service_name }}
       -
         name: Install yq
