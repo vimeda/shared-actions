@@ -3,7 +3,18 @@ data "template_file" "claims" {
   template = file(each.value)
 }
 
+# Use external data source to run the bash script to modify the claims
+data "external" "modified_yaml" {
+  program = ["bash", "${path.module}/modify_claims.sh"]
+
+  query = {
+    vault_id   = var.vault_id
+    folder_path = "${var.service_name}/configs/crossplane/${terraform.workspace}"
+  }
+}
+
 locals {
+  # Use the modified YAML from the external script and add the commit hash and vault ID
   updated_yaml_maps = [
     for claim in data.template_file.claims : merge(
       yamldecode(claim.rendered),
@@ -13,7 +24,7 @@ locals {
             lookup(yamldecode(claim.rendered), "spec", {})["parameters"],
             {
               image_tag = var.commit_hash,
-              vault_id  = var.vault_id,
+              vault_id  = var.vault_id
             }
           )
         }
@@ -25,7 +36,7 @@ locals {
 }
 
 resource "local_file" "output_yaml" {
-  filename = "${var.service_name}/configs/crossplane/${terraform.workspace}/combined.yaml"
+  filename = "${var.service_name}/configs/crossplane/${terraform.workspace}/manifest.yaml"
   content  = local.updated_yaml
 }
 
