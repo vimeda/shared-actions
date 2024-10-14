@@ -5,11 +5,12 @@ data "template_file" "claims" {
 
 # Use external data source to run the bash script to modify the claims
 data "external" "modified_yaml" {
+  for_each = data.template_file.claims
   program = ["bash", "${path.module}/modify-claims.sh"]
 
   query = {
     vault_id   = var.vault_id
-    folder_path = "${var.service_name}/configs/crossplane/${terraform.workspace}"
+    claim_yaml = each.value.rendered  # Pass the rendered YAML content
   }
 }
 
@@ -32,7 +33,7 @@ locals {
     )
   ]
 
-  updated_yaml = join("\n---\n", [ for yaml_map in local.updated_yaml_maps : yamlencode(yaml_map) ])
+  updated_yaml = join("\n---\n", [for yaml_map in data.external.modified_yaml : yaml_map.result.manifest])
 }
 
 resource "local_file" "output_yaml" {
