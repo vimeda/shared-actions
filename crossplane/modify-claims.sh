@@ -34,5 +34,5 @@ if [[ " ${CLAIM_TYPES[@]} " =~ " ${kind} " ]]; then
 fi
 
 # Convert the final YAML to JSON for Terraform
-manifest=$(yq eval -j "$temp_yaml_file")
+manifest=$(yq eval -o=json "$temp_yaml_file")
 jq -n --arg manifest "$manifest" '{ manifest: $manifest }'
