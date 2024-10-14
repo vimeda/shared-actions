@@ -33,6 +33,16 @@ jobs:
         with:
           path: ./scripts/${{ inputs.service_name }}
       -
+        name: Install jq
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+      -
+        name: Install yq
+        uses: chrisdickinson/setup-yq@v1.0.1
+        with:
+          yq-version: v4.25.3
+      -
         name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
