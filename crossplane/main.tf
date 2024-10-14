@@ -5,7 +5,7 @@ data "template_file" "claims" {
 
 # Use external data source to run the bash script to modify the claims
 data "external" "modified_yaml" {
-  program = ["bash", "${path.module}/modify_claims.sh"]
+  program = ["bash", "${path.module}/modify-claims.sh"]
 
   query = {
     vault_id   = var.vault_id
