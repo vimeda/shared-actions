@@ -1,12 +1,12 @@
 #!/bin/bash
 
-set -euo pipefail
+set -euov pipefail
 
 # Input JSON from Terraform
 eval "$(jq -r '@sh "VAULT_ID=\(.vault_id) CLAIM_YAML=\(.claim_yaml)"')"
 
 # Write the input YAML to a temporary file for processing
-temp_yaml_file=$(mktemp)
+temp_yaml_file=tmp.yaml
 echo "$CLAIM_YAML" > "$temp_yaml_file"
 
 # Predefined array of claim types to process

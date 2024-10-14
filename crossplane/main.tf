@@ -1,6 +1,11 @@
 data "template_file" "claims" {
-  for_each = fileset("${var.service_name}/configs/crossplane/${terraform.workspace}", "*.yaml")
-  template = file(each.value)
+  for_each = fileset("../${var.service_name}/configs/crossplane/${terraform.workspace}", "*.yaml")
+  template = file("../${var.service_name}/configs/crossplane/${terraform.workspace}/${each.value}")
+
+  vars = {
+    commit_hash = var.commit_hash
+    service_name = var.service_name
+  }
 }
 
 # Use external data source to run the bash script to modify the claims
@@ -33,7 +38,9 @@ locals {
     )
   ]
 
-  updated_yaml = join("\n---\n", [for yaml_map in data.external.modified_yaml : yaml_map.result.manifest])
+  # Convert each updated_yaml_map to a YAML string
+  updated_yaml_intermediate = join("\n---\n", [for yaml_map in local.updated_yaml_maps : yamlencode(yaml_map)])
+  updated_yaml = join("\n---\n", [for yaml_map in data.external.modified_yaml : yamlencode(yaml_map.result.manifest)])
 }
 
 resource "local_file" "output_yaml" {
@@ -48,8 +55,4 @@ data "kubectl_file_documents" "claims" {
 resource "kubectl_manifest" "claim" {
   for_each  = data.kubectl_file_documents.claims.manifests
   yaml_body = each.value
-}
-
-output "updated_claims" {
-  value = local.updated_yaml
 }
