@@ -13,15 +13,15 @@ for file in "$FOLDER_PATH"/*.yaml; do
   # Check if the kind matches one of the claim types we're interested in
   kind=$(yq eval '.kind' "$file")
   if [[ " ${CLAIM_TYPES[@]} " =~ " ${kind} " ]]; then
-    # Extract srvName to use for fetching secrets
-    srv_name=$(yq eval '.spec.parameters.srvName' "$file")
+    # Extract service_name to use for fetching secrets
+    srv_name=$(yq eval '.spec.parameters.service_name' "$file")
 
     if [[ -z "$srv_name" ]]; then
-      echo "Warning: srvName is not defined in $file, skipping secret fetching."
+      echo "Warning: service_name is not defined in $file, skipping secret fetching."
       continue
     fi
 
-    # Fetch secrets based on srvName (using 1Password CLI as an example)
+    # Fetch secrets based on srv_name (using 1Password CLI as an example)
     secrets=$(op items get "$srv_name" --vault="$VAULT_ID" --format=json | jq '.fields | map({(.label): .value}) | add')
 
     if [[ -z "$secrets" ]]; then
