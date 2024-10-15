@@ -21,9 +21,3 @@ terraform {
     key    = "crossplane/gdpr-deleter-srv"
   }
 }
-
-provider "kubectl" {
-  config_path       = "/home/runner/config"
-  load_config_file  = true
-  apply_retry_count = 15
-}
