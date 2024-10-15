@@ -34,14 +34,16 @@ resource "local_file" "output_yaml" {
   content  = each.value
 }
 
+output "local_file" {
+  value = local_file.output_yaml
+}
+
 data "kubectl_file_documents" "claims" {
   for_each = local.updated_yaml_strings
   content  = each.value
 }
 
-output "kubectl_file_documents" {
-  value = {
-    for key, doc in data.kubectl_file_documents.claims :
-    key => doc.manifests
-  }
+resource "kubectl_manifest" "claim" {
+  for_each  = data.kubectl_file_documents.claims
+  yaml_body = each.value.content
 }
