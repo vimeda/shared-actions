@@ -20,39 +20,27 @@ data "external" "modified_yaml" {
 }
 
 locals {
-  # Use the modified YAML from the external script and add the commit hash and vault ID
-  updated_yaml_maps = [
-    for claim in data.template_file.claims : merge(
-      yamldecode(claim.rendered),
-      {
-        spec = {
-          parameters = merge(
-            lookup(yamldecode(claim.rendered), "spec", {})["parameters"],
-            {
-              image_tag = var.commit_hash,
-              vault_id  = var.vault_id
-            }
-          )
-        }
-      }
-    )
-  ]
+  updated_yaml_maps = {
+    for key, claim in data.external.modified_yaml : key => yamldecode(claim.result.manifest)
+  }
 
-  # Convert each updated_yaml_map to a YAML string
-  updated_yaml_intermediate = join("\n---\n", [for yaml_map in local.updated_yaml_maps : yamlencode(yaml_map)])
-  updated_yaml = join("\n---\n", [for yaml_map in data.external.modified_yaml : yamlencode(yaml_map.result.manifest)])
+  updated_yaml_strings = {
+    for key, yaml_map in local.updated_yaml_maps : key => yamlencode(yaml_map)
+  }
 }
 
 resource "local_file" "output_yaml" {
-  filename = "${var.service_name}/configs/crossplane/${terraform.workspace}/manifest.yaml"
-  content  = local.updated_yaml
+  for_each = local.updated_yaml_strings
+  filename = "${var.service_name}/configs/crossplane/${terraform.workspace}/${each.key}-manifest.yaml"
+  content  = each.value
 }
 
 data "kubectl_file_documents" "claims" {
-  content = local.updated_yaml
+  for_each = local.updated_yaml_strings
+  content  = each.value
 }
 
 resource "kubectl_manifest" "claim" {
-  for_each  = data.kubectl_file_documents.claims.manifests
-  yaml_body = each.value
+  for_each  = data.kubectl_file_documents.claims
+  yaml_body = each.value.content
 }
