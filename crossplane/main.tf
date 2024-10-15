@@ -40,6 +40,6 @@ data "kubectl_file_documents" "claims" {
 }
 
 resource "kubectl_manifest" "claim" {
-  for_each  = data.kubectl_file_documents.claims
-  yaml_body = each.value.yaml_body
+  for_each  = data.kubectl_file_documents.claims.manifests
+  yaml_body = each.value
 }
