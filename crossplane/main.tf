@@ -4,7 +4,6 @@ data "template_file" "claims" {
 
   vars = {
     commit_hash = var.commit_hash
-    service_name = var.service_name
   }
 }
 

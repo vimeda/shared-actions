@@ -3,6 +3,11 @@ variable "commit_hash" {
   type = string
 }
 
+variable "cluster_name" {
+  description = "name of the eks cluster"
+  type = string
+}
+
 variable "service_name" {
   description = "name of the service to deploy"
   type = string
