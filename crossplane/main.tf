@@ -45,8 +45,3 @@ output "kubectl_file_documents" {
     key => doc.manifests
   }
 }
-
-resource "kubectl_manifest" "claim" {
-  for_each  = { for key, doc in data.kubectl_file_documents.claims : key => doc }
-  yaml_body = each.value.manifests
-}
