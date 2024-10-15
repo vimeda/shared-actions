@@ -28,15 +28,20 @@ locals {
   }
 }
 
+output "local_file" {
+  value = local.updated_yaml_maps
+}
+
+
 resource "local_file" "output_yaml" {
   for_each = local.updated_yaml_strings
   filename = "${var.service_name}/configs/crossplane/${terraform.workspace}/${each.key}-manifest.yaml"
   content  = each.value
 }
 
-output "local_file" {
-  value = local_file.output_yaml
-}
+#output "local_file" {
+#  value = local_file.output_yaml
+#}
 
 #data "kubectl_file_documents" "claims" {
 #  for_each = local.updated_yaml_strings
