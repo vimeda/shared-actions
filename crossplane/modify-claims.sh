@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euov pipefail
+set -euo pipefail
 
 # Input JSON from Terraform
 eval "$(jq -r '@sh "VAULT_ID=\(.vault_id) CLAIM_YAML=\(.claim_yaml)"')"
@@ -21,14 +21,20 @@ if [[ " ${CLAIM_TYPES[@]} " =~ " ${kind} " ]]; then
   if [[ -z "$service_name" ]]; then
     echo "Warning: service_name is not defined, skipping secret fetching."
   else
+    # Verify if 1Password CLI is logged in
+    if ! op vault list >/dev/null 2>&1; then
+      echo "Error: Not logged in to 1Password CLI" >&2
+      exit 1
+    fi
+
     # Fetch secrets based on service_name
-    secrets=$(op items get "$service_name" --vault="$VAULT_ID" --format=json | jq '.fields | map({(.label): .value}) | add')
+    secrets=$(op items get "$service_name" --vault="$VAULT_ID" --format=json | jq -c '.fields | map({(.label): .value}) | add')
 
     if [[ -z "$secrets" ]]; then
       echo "Warning: Failed to fetch secrets for $service_name, skipping secret addition."
     else
       # Add secrets to the YAML
-      yq eval ".spec.parameters.secrets = $secrets" -i "$temp_yaml_file"
+      yq eval ".spec.parameters.secrets = \"$secrets\"" -i "$temp_yaml_file"
     fi
   fi
 fi
