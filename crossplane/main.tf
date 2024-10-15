@@ -15,7 +15,7 @@ data "external" "modified_yaml" {
 
   query = {
     vault_id   = var.vault_id
-    claim_yaml = each.value.rendered  # Pass the rendered YAML content
+    claim_yaml = each.value.rendered
   }
 }
 
