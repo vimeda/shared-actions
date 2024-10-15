@@ -21,3 +21,7 @@ terraform {
     key    = "crossplane/gdpr-deleter-srv"
   }
 }
+
+provider "kubectl" {
+  load_config_file =false
+}
