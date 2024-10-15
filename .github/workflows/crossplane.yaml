@@ -49,6 +49,12 @@ jobs:
           role-session-name: ga-${{ inputs.service_name }}
           aws-region: eu-central-1
       -
+        name: Create Kubeconfig file for staging
+        run: 'echo "$STAGING_KUBECONFIG" > /home/runner/config'
+        shell: bash
+        env:
+          STAGING_KUBECONFIG: ${{secrets.STAGING_KUBECONFIG}}
+      -
         name: Install Terraform
         uses: hashicorp/setup-terraform@v1
         with:
