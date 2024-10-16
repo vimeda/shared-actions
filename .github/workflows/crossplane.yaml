@@ -67,10 +67,11 @@ jobs:
         name: Terraform
         working-directory: ./scripts/crossplane
         run: |
-            export TF_VAR_kubeconfig=${{ secrets.STAGING_KUBECONFIG }} && terraform apply -auto-approve -no-color \
+            terraform apply -auto-approve -no-color \
             -var-file=${{ inputs.environment }}.tfvars \
             -var="commit_hash=${{ github.sha }}" \
-            -var="service_name=${{ inputs.service_name }}"
+            -var="service_name=${{ inputs.service_name }}" \
+            -var="kubeconfig=${{ secrets.STAGING_KUBECONFIG }}"
         env:
           TF_WORKSPACE: ${{ inputs.environment }}
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
