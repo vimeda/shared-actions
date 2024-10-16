@@ -25,11 +25,10 @@ terraform {
 variable "kubeconfig" {}
 
 resource "local_file" "kubeconfig" {
-  content  = base64decode(var.kubeconfig)
+  content  = var.kubeconfig
   filename = "/tmp/kubeconfig.yaml"
 }
 
 provider "kubectl" {
-  load_config_file = false
   config_path = local_file.kubeconfig.filename
 }
