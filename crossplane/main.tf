@@ -7,6 +7,11 @@ data "template_file" "claims" {
   }
 }
 
+output "template_file" {
+  value = data.template_file.claims
+}
+
+#
 # Use external data source to run the bash script to modify the claims
 data "external" "modified_yaml" {
   for_each = data.template_file.claims
@@ -18,27 +23,22 @@ data "external" "modified_yaml" {
   }
 }
 
+# Locals for decoding the updated YAML from the external script output
 locals {
-  updated_yaml_maps = {
-    for key, claim in data.external.modified_yaml : key => yamldecode(claim.result.manifest)
-  }
-
-  updated_yaml_strings = {
-    for key, yaml_map in local.updated_yaml_maps : key => yamlencode(yaml_map)
-  }
+  # Define the path to the directory containing YAML files
+  yaml_dir = "${path.module}/tmp"  # Adjust this to your module's relative path
+  yaml_files = fileset(local.yaml_dir, "*.yaml")  # Get all YAML files in the specified directory
 }
 
-resource "local_file" "output_yaml" {
-  for_each = local.updated_yaml_strings
-  filename = "${var.service_name}/configs/crossplane/${terraform.workspace}/${each.key}-manifest.yaml"
-  content  = each.value
-}
 
+# Parse the YAML content into Kubernetes documents using kubectl provider
 data "kubectl_file_documents" "claims" {
-  for_each = local.updated_yaml_strings
-  content  = each.value
+  depends_on = [data.external.modified_yaml]
+  for_each   = local.yaml_files
+  content    = file("${local.yaml_dir}/${each.value}")  # Read the file content for each YAML file
 }
 
+# Apply the Kubernetes manifests based on the modified claims
 resource "kubectl_manifest" "claim" {
   for_each  = data.kubectl_file_documents.claims
   yaml_body = each.value.content

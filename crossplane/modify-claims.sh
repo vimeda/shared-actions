@@ -2,11 +2,19 @@
 
 set -euov pipefail
 
-# Input JSON from Terraform
+# Ensure the tmp/ folder exists in the current working directory
+mkdir -p tmp/
+
+# Extract variables using jq
 eval "$(jq -r '@sh "VAULT_ID=\(.vault_id) CLAIM_YAML=\(.claim_yaml)"')"
 
-# Write the input YAML to a temporary file for processing
-temp_yaml_file=tmp.yaml
+# Generate a SHA256 hash from CLAIM_YAML and use part of it for the file name
+hash=$(echo -n "$CLAIM_YAML" | sha256sum | cut -d' ' -f1)
+
+# Create a temporary file in the tmp/ folder, prefixed with 'tmpfile_' and suffixed with the hash
+temp_yaml_file="tmp/tmpfile_${hash}.yaml"
+
+# Write the input YAML to the temporary file for processing
 echo "$CLAIM_YAML" > "$temp_yaml_file"
 
 # Predefined array of claim types to process
