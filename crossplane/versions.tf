@@ -6,6 +6,10 @@ terraform {
       source  = "gavinbunney/kubectl"
       version = ">= 1.7.0"
     }
+    local = {
+      source  = "hashicorp/local"
+      version = "~> 2.0"
+    }
     aws = {
       source  = "hashicorp/aws"
       version = "4.64.0"
@@ -21,6 +25,7 @@ terraform {
     key    = "crossplane/gdpr-deleter-srv"
   }
 }
+
 
 provider "kubectl" {
   load_config_file = false
