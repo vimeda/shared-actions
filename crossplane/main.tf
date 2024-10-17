@@ -33,8 +33,8 @@ locals {
 # Parse the YAML content into Kubernetes documents using kubectl provider
 data "kubectl_file_documents" "claims" {
   depends_on = [data.external.modified_yaml]  # Ensure this runs after the external data source
-  for_each   = local.yaml_files
-  content    = file("${local.yaml_dir}/${each.value}")  # Read the file content for each YAML file
+  for_each = data.external.modified_yaml
+  content  = each.value.result.modified_claims_yaml
 }
 
 output "kubectl_manifest" {
