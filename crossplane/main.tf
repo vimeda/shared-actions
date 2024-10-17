@@ -43,7 +43,7 @@ output "kubectl_manifest" {
 
 #Apply the Kubernetes manifests based on the modified claims
 resource "kubectl_manifest" "claim" {
-  count  = count(data.kubectl_file_documents.claims.manifests)
+  count  = data.kubectl_file_documents.claims.manifests
   yaml_body = each.value.content[count.index]
 }
 
