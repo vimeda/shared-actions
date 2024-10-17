@@ -34,11 +34,11 @@ locals {
 data "kubectl_file_documents" "claims" {
   depends_on = [data.external.modified_yaml]  # Ensure this runs after the external data source
   for_each = data.external.modified_yaml
-  content  = yamlencode(jsonencode(each.value.result.manifest))
+  content  = jsonencode(each.value.result.manifest)
 }
 
 output "kubectl_manifest" {
-  value = data.kubectl_file_documents.claims
+  value = data.kubectl_file_documents.claims.content
 }
 
 # Apply the Kubernetes manifests based on the modified claims
