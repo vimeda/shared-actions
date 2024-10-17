@@ -41,10 +41,17 @@ output "kubectl_manifest" {
   value = data.kubectl_file_documents.claims
 }
 
-#Apply the Kubernetes manifests based on the modified claims
-resource "kubectl_manifest" "claim" {
-  count  = data.kubectl_file_documents.claims
-  yaml_body = each.value.manifests.content[count.index]
+locals {
+  # Collect all manifests into a flat list
+  manifests_array = flatten([
+    for doc in data.kubectl_file_documents.claims : [
+      for _, manifest in doc.manifests : manifest
+    ]
+  ])
 }
 
+resource "kubectl_manifest" "apply" {
+  for_each  = toset(local.manifests_array)
 
+  yaml_body = each.value  # Apply each manifest from the array
+}
