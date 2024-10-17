@@ -38,7 +38,7 @@ data "kubectl_file_documents" "claims" {
 }
 
 output "kubectl_manifest" {
-  value = data.kubectl_file_documents.claims.*.content
+  value = data.kubectl_file_documents.claims
 }
 
 ## Apply the Kubernetes manifests based on the modified claims
