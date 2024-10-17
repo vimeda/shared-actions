@@ -34,7 +34,7 @@ locals {
 data "kubectl_file_documents" "claims" {
   depends_on = [data.external.modified_yaml]  # Ensure this runs after the external data source
   for_each = data.external.modified_yaml
-  content  = each.value.result.manifest
+  content  = yamlencode(each.value.result.manifest)
 }
 
 output "kubectl_manifest" {
