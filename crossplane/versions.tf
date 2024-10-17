@@ -22,13 +22,6 @@ terraform {
   }
 }
 
-variable "kubeconfig" {}
-
-resource "local_file" "kubeconfig" {
-  content  = var.kubeconfig
-  filename = "/tmp/kubeconfig.yaml"
-}
-
 provider "kubectl" {
-  config_path = local_file.kubeconfig.filename
+  load_config_file = false
 }

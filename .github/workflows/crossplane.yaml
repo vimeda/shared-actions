@@ -74,4 +74,5 @@ jobs:
             -var="kubeconfig=${{ secrets.STAGING_KUBECONFIG }}"
         env:
           TF_WORKSPACE: ${{ inputs.environment }}
+          KUBECONFIG: ${{ secrets.STAGING_KUBECONFIG }}
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
