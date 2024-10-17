@@ -7,6 +7,9 @@ data "template_file" "claims" {
   }
 }
 
+output "template_file" {
+  value = data.template_file.claims
+}
 
 #
 # Use external data source to run the bash script to modify the claims
@@ -34,9 +37,14 @@ data "kubectl_file_documents" "claims" {
   content    = file("${local.yaml_dir}/${each.value}")  # Read the file content for each YAML file
 }
 
+output "kubectl_manifest" {
+  value = data.kubectl_file_documents.claims
+}
+
 # Apply the Kubernetes manifests based on the modified claims
 resource "kubectl_manifest" "claim" {
   for_each  = data.kubectl_file_documents.claims
   yaml_body = each.value.content
 }
+
 
