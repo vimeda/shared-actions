@@ -42,9 +42,9 @@ output "kubectl_manifest" {
 }
 
 # Apply the Kubernetes manifests based on the modified claims
-resource "kubectl_manifest" "claim" {
-  for_each  = data.kubectl_file_documents.claims
-  yaml_body = each.value.result.manifest
-}
+#resource "kubectl_manifest" "claim" {
+#  for_each  = data.kubectl_file_documents.claims
+#  yaml_body = each.value.result.manifest
+#}
 
 
