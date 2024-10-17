@@ -7,10 +7,6 @@ data "template_file" "claims" {
   }
 }
 
-output "template_file" {
-  value = data.template_file.claims
-}
-
 #
 # Use external data source to run the bash script to modify the claims
 data "external" "modified_yaml" {
@@ -21,6 +17,10 @@ data "external" "modified_yaml" {
     vault_id   = var.vault_id
     claim_yaml = each.value.rendered
   }
+}
+
+output "modified_yaml" {
+  value = data.external.modified_yaml
 }
 
 # Locals for decoding the updated YAML from the external script output
