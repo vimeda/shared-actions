@@ -72,8 +72,7 @@ jobs:
           terraform apply -auto-approve -no-color \
           -var-file=${{ inputs.environment }}.tfvars \
           -var="commit_hash=${{ github.sha }}" \
-          -var="service_name=${{ inputs.service_name }}" \
-          -var="kubeconfig=${{ secrets.STAGING_KUBECONFIG }}"
+          -var="service_name=${{ inputs.service_name }}"
         env:
           TF_WORKSPACE: ${{ inputs.environment }}
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
