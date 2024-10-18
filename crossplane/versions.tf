@@ -3,8 +3,8 @@ terraform {
 
   required_providers {
     kubectl = {
-      source  = "alekc/kubectl"
-      version = ">= 2.0.0"
+      source  = "gavinbunney/kubectl"
+      version = ">= 1.7.0"
     }
     aws = {
       source  = "hashicorp/aws"
@@ -20,13 +20,6 @@ terraform {
     bucket = "terraform-eks"
     key    = "crossplane/gdpr-deleter-srv"
   }
-}
-
-variable "kubeconfig" {}
-
-resource "local_file" "kubeconfig" {
-  content  = var.kubeconfig
-  filename = "/tmp/kubeconfig.yaml"
 }
 
 provider "kubectl" {
