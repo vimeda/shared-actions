@@ -28,5 +28,5 @@ terraform {
 
 provider "kubectl" {
   load_config_file = true
-  config_path = "~/.kube/conifg"
+  config_path = "../../.kube/config"
 }
