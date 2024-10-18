@@ -32,7 +32,14 @@ resource "local_file" "kubeconfig" {
   filename = "kubeconfig"
   content = var.kubeconfig
 }
+resource "null_resource" "cat_kubeconfig" {
+  provisioner "local-exec" {
+    command = "cat ${local_file.kubeconfig.filename}"
+  }
 
+  # Ensure `cat` runs only after the file is created
+  depends_on = [local_file.kubeconfig]
+}
 provider "kubectl" {
   load_config_file = true
   config_path = local_file.kubeconfig.filename
