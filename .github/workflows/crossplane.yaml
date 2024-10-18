@@ -67,8 +67,8 @@ jobs:
         name: Terraform
         working-directory: ./scripts/crossplane
         run: |
-          echo "${{ secrets.STAGING_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
-          export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
+          echo "${{ secrets.STAGING_KUBECONFIG }}" > ~/.kube/conifg
+          export KUBECONFIG=$(cat ~/.kube/config)
           terraform apply -auto-approve -no-color \
           -var-file=${{ inputs.environment }}.tfvars \
           -var="commit_hash=${{ github.sha }}" \
