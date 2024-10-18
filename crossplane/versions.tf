@@ -27,6 +27,5 @@ terraform {
 }
 
 provider "kubectl" {
-  load_config_file = true
-  config_path = "../../.kube/config"
+  load_config_file = false
 }
