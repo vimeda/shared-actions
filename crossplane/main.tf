@@ -50,8 +50,8 @@ locals {
   ])
 }
 
-resource "kubectl_manifest" "apply" {
-  for_each  = toset(local.manifests_array)
-
-  yaml_body = each.value  # Apply each manifest from the array
-}
+#resource "kubectl_manifest" "apply" {
+#  for_each  = toset(local.manifests_array)
+#
+#  yaml_body = each.value  # Apply each manifest from the array
+#}
