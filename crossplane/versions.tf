@@ -30,7 +30,7 @@ resource "local_file" "kubeconfig" {
 }
 
 provider "kubectl" {
-  load_config_file = false
+  load_config_file = true
   config_path = local_file.kubeconfig.filename
 }
 
