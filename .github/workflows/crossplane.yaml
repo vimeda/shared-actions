@@ -68,7 +68,7 @@ jobs:
         working-directory: ./scripts/crossplane
         run: |
           export KUBECONFIG=${{ secrets.STAGING_KUBECONFIG }}
-          cat $KUBECONFIG
+          
           terraform apply -auto-approve -no-color \
           -var-file=${{ inputs.environment }}.tfvars \
           -var="commit_hash=${{ github.sha }}" \
