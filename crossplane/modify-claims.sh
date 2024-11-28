@@ -32,7 +32,7 @@ add_vpc_config() {
   if [[ "$env" == "staging" ]]; then
     config='{"vpcConfig":[{"securityGroupIds":["sg-03c24245575c1ebc0"],"subnetIds":["subnet-011cb6fe763310759","subnet-08deca209f9e46ebb","subnet-06e62ab1abfd70465"]}]}'
   elif [[ "$env" == "prod" ]]; then
-    config='{"vpcConfig":[{"securityGroupIds":["sg-03c24245575c1ebc0"],"subnetIds":["subnet-011cb6fe763310759","subnet-08deca20d9f9e46ebb","subnet-06e62ab1abfd70465"]}]}'
+    config='{"vpcConfig":[{"securityGroupIds":["sg-03c24245575c1ebc0"],"subnetIds":["subnet-011cb6fe763310759","subnet-08deca209f9e46ebb","subnet-06e62ab1abfd70465"]}]}'
   else
     echo "Error: Unsupported environment $env"
     exit 1
