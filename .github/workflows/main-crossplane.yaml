@@ -108,6 +108,7 @@ jobs:
       - name: copy scripts to scripts folder in working directory
         run: |
           mkdir ./scripts && ls
+          ls -R ${{ github.workspace }}
           cp -r ${{ github.workspace }}/scripts/.github/workflows ./scripts
         shell: sh
 
