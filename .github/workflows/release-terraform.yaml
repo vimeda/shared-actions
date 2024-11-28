@@ -33,7 +33,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Configure AWS Credentials
         id: aws
@@ -44,7 +44,7 @@ jobs:
           aws-region: ${{ inputs.aws_region }}
 
       - name: Download Prod Variables
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: prod-variables
           path: ${{ inputs.working_directory }}
