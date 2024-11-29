@@ -55,4 +55,7 @@ resource "kubectl_manifest" "apply" {
   depends_on = [data.kubectl_file_documents.claims]
   for_each  = toset(local.manifests_array)
   yaml_body = each.value  # Apply each manifest from the array
+  lifecycle {
+    create_before_destroy = true  # recreate the resource each time
+  }
 }
