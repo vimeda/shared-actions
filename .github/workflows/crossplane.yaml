@@ -78,7 +78,7 @@ jobs:
           GOPRIVATE: "github.com/vimeda/*"
 
       - name: Upload Build Artifacts
-        if: ${{inputs.run_zip_lambda_workflow_step == 'true'}}
+        if: ${{inputs.run_zip_lambda_workflow_step == true}}
         uses: actions/upload-artifact@v4
         with:
           name: srv-lambdas
@@ -86,7 +86,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         id: download
-        if: ${{inputs.run_zip_lambda_workflow_step == 'true'}}
+        if: ${{inputs.run_zip_lambda_workflow_step == true}}
         with:
           name: srv-lambdas
           path: ${{ github.workspace }}/dist
