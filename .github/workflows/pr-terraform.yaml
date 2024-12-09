@@ -39,9 +39,9 @@ jobs:
         id: aws
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ inputs.role_name }}
-          role-session-name: ${{ inputs.role_session_name }}
-          aws-region: ${{ inputs.aws_region }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-${{ inputs.service_name }}-role
+          role-session-name: ga-${{ inputs.service_name }}
+          aws-region:  eu-central-1
 
       - name: Download Staging Variables
         uses: actions/download-artifact@v4
