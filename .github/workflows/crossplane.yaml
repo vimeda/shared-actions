@@ -58,17 +58,7 @@ jobs:
         with:
           terraform_version: ~1.9
 
-
-
-
-
-
-
-
-
-
-
-
+      #build lambdas zip or lambda docker images
 
       - name: Build lambdas
         if: ${{inputs.run_zip_lambda_workflow_step == true}}
@@ -110,31 +100,8 @@ jobs:
           done
         env:
             run_zip_lambda_workflow_step: ${{ inputs.run_zip_lambda_workflow_step }}
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
+
+      #apply terraform
 
       -
         name: Terraform Init
