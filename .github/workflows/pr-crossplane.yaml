@@ -1,28 +1,16 @@
 on:
   workflow_call:
     inputs:
-      role_name:
+      environment:
         required: true
         type: string
-      role_session_name:
+      service_name:
         required: true
         type: string
-      aws_region:
-        required: false
-        type: string
-        default: eu-central-1
-      working_directory:
-        required: true
-        type: string
-      env:
-        required: true
-        type: string
-      zip_lambda_workflow_step:
-        required: true
+      run_zip_lambda_workflow_step:
         type: boolean
-      commit_hash:
-        required: true
-        type: string
+        default:  false
+
 
 permissions:
   id-token: write
@@ -31,93 +19,117 @@ permissions:
   statuses: write
 
 jobs:
-  terraform:
-    name: Terraform
+  crossplane-terraform:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-
-    defaults:
-      run:
-        working-directory: ${{ inputs.working_directory }}
+    timeout-minutes: 10
 
     steps:
-      - name: Checkout code
+      -
+        name: Checkout shared-actions
         uses: actions/checkout@v4
-
-      - name: Configure AWS Credentials
-        id: aws
-        uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ inputs.role_name }}
-          role-session-name: ${{ inputs.role_session_name }}
-          aws-region: ${{ inputs.aws_region }}
+          repository: vimeda/shared-actions
+          path: ./scripts
+          ref: feature/shared-crossplane
+      -
+        name: Checkout service
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          path: ./scripts/${{ inputs.service_name }}
+      -
+        name: Install yq
+        uses: chrisdickinson/setup-yq@v1.0.1
+        with:
+          yq-version: v4.25.3
+      -
+        name: Install 1Password CLI
+        uses: 1password/install-cli-action@v1
+      -
+        name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-${{ inputs.service_name }}-role
+          role-session-name: ga-${{ inputs.service_name }}
+          aws-region: eu-central-1
+      -
+        name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ~1.9
+
+      #build lambdas zip or lambda docker images
 
       - name: Build lambdas
+        if: ${{inputs.run_zip_lambda_workflow_step == true}}
         run: cd  ${{ github.workspace }} &&  make lambda
-        if: ${{env.zip_lambda_workflow_step==true}}
         env:
           GITHUB_TOKEN: ${{ secrets.GB_TOKEN_PRIVATE }}
           GOPRIVATE: "github.com/vimeda/*"
-          zip_lambda_workflow_step: ${{ inputs.zip_lambda_workflow_step }}
 
       - name: Upload Build Artifacts
+        if: ${{inputs.run_zip_lambda_workflow_step == true}}
         uses: actions/upload-artifact@v4
-        if: ${{env.zip_lambda_workflow_step==true}}
         with:
           name: srv-lambdas
           path: ${{ github.workspace }}/dist/*
-          zip_lambda_workflow_step: ${{ inputs.zip_lambda_workflow_step }}
 
       - uses: actions/download-artifact@v4
         id: download
-        if: ${{env.zip_lambda_workflow_step==true}}
+        if: ${{inputs.run_zip_lambda_workflow_step == true}}
         with:
           name: srv-lambdas
-          path:  ${{ github.workspace }}/dist
-          zip_lambda_workflow_step: ${{ inputs.zip_lambda_workflow_step }}
+          path: ${{ github.workspace }}/dist
 
-      - uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: ~1.4
-
-      - uses: actions/download-artifact@v4
-        id: downloadscripts
-        with:
-          name: scripts
-          path: /tmp/scripts
-
-      - name: Install 1Password Cli, patch claim
-        run: |
-          curl https://cache.agilebits.com/dist/1P/op2/pkg/v2.18.0/op_linux_amd64_v2.23.0.zip > op.zip
-          sudo unzip op.zip -d /usr/local/bin && rm op.zip
-          python -m pip install "ruamel.yaml<0.18.0"
-
-          python  /tmp/scripts/.github/workflows/scripts/patch.py
-
-          for file in *claims.yaml; do
-              if [ -f "$file" ]; then
-                  cat $file
-              fi
-          done
-
+      - name: Display structure of downloaded files
+        if: ${{env.run_zip_lambda_workflow_step == true}}
+        run: ls -R
+        working-directory: ${{ steps.download.outputs.download-path }}
         env:
-          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
-          VAULT_ID: "errsir3kqd4gdjgaxliofyskey"
-          ENV:  ${{ inputs.env }}
+          run_zip_lambda_workflow_step: ${{ inputs.run_zip_lambda_workflow_step }}
 
-      - name: patch claim image uri with commit hash
-        id: patch_image_uri_with_commit_hash
+      #apply terraform
+
+      -
+        name: Terraform Init
+        working-directory: ./scripts/crossplane
         run: |
-          find ./ -type f -name "*.yaml" -exec sed -i -e 's/COMMIT_HASH/${{ env.commit_hash }}/g' -e 's/ECR_BASE_URL/279707217826.dkr.ecr.eu-central-1.amazonaws.com\/lykon/g' {} \;
-        env:
-          TF_WORKSPACE: ${{ inputs.env }}
-          commit_hash: ${{ inputs.commit_hash }}
+          terraform init \
+            -backend-config="region=eu-central-1" \
+            -backend-config="bucket=terraform-eks" \
+            -backend-config="key=crossplane/${{ inputs.environment }}/${{ inputs.service_name }}"
 
-      - name: Terraform Plan
-        id: plan
+      -
+        name: Terraform Validate
+        working-directory: ./scripts/crossplane
+        run: |
+          terraform validate -no-color
+      -
+        name: Terraform Staging
+        working-directory: ./scripts/crossplane
         run: |
           echo "${{ secrets.STAGING_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
-          cd ${{ github.workspace }}/configs/crossplane && terraform init && terraform -chdir=${{ github.workspace }}/configs/crossplane plan
+          terraform plan -no-color \
+          -var-file=${{ inputs.environment }}.tfvars \
+          -var="commit_hash=${{ github.sha }}" \
+          -var="service_name=${{ inputs.service_name }}"
         env:
-          TF_WORKSPACE: ${{ inputs.env }}
+          TF_WORKSPACE: ${{ inputs.environment }}
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
+
+      -
+        name: Terraform Prod
+        working-directory: ./scripts/crossplane
+        run: |
+          echo "${{ secrets.PROD_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
+          export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
+          terraform plan -no-color \
+          -var-file=${{ inputs.environment }}.tfvars \
+          -var="commit_hash=${{ github.sha }}" \
+          -var="service_name=${{ inputs.service_name }}"
+        env:
+          TF_WORKSPACE: ${{ inputs.environment }}
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.PROD_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
+
+
