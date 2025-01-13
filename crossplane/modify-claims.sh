@@ -75,7 +75,7 @@ elif [[ " ${CLAIM_TYPES_GOAPP[@]} " =~ " ${kind} " ]]; then
   yq eval ".spec.parameters.vault_id = \"$vault_id\"" -i "$temp_yaml_file"
 fi
 
-if [[ "$kind" == "LykonEventSourceMapping" ]]; then
+if [[ "$kind" == "XLykonLambdaDockerImage" ]]; then
   # Get the current stream value
   stream=$(yq eval '.spec.parameters.stream' "$temp_yaml_file")
 
