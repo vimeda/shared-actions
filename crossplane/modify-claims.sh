@@ -79,7 +79,7 @@ if [[ "$kind" == "LykonEventSourceMapping" ]]; then
   # Get the current stream value
   stream=$(yq eval '.spec.parameters.stream' "$temp_yaml_file")
 
-  # Modify the stream based on whether it's S3 or Kinesis
+  # Modify the stream based on whether it's S3, Kinesis, or a simple Kinesis stream name
   if [[ "$stream" == s3:* ]]; then
     # Extract bucket name from the stream and form the S3 ARN
     bucket_name=$(echo "$stream" | cut -d':' -f2)
@@ -91,8 +91,9 @@ if [[ "$kind" == "LykonEventSourceMapping" ]]; then
     new_stream="arn:aws:kinesis:279707217826:stream/$stream_name"
     yq eval ".spec.parameters.stream = \"$new_stream\"" -i "$temp_yaml_file"
   else
-    echo "Error: Unsupported stream format: $stream"
-    exit 1
+    # Treat any other value as a simple Kinesis stream name and form the Kinesis ARN
+    new_stream="arn:aws:kinesis:279707217826:stream/$stream"
+    yq eval ".spec.parameters.stream = \"$new_stream\"" -i "$temp_yaml_file"
   fi
 fi
 
