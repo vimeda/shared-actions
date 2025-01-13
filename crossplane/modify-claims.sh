@@ -88,11 +88,11 @@ if [[ "$kind" == "XLykonLambdaDockerImage" ]]; then
   elif [[ "$stream" == kinesis:* ]]; then
     # Extract stream name from the stream and form the Kinesis ARN
     stream_name=$(echo "$stream" | cut -d':' -f2)
-    new_stream="arn:aws:kinesis:279707217826:stream/$stream_name"
+    new_stream="arn:aws:kinesis:eu-central-1:279707217826:stream/$stream_name"
     yq eval ".spec.parameters.stream = \"$new_stream\"" -i "$temp_yaml_file"
   else
     # Treat any other value as a simple Kinesis stream name and form the Kinesis ARN
-    new_stream="arn:aws:kinesis:279707217826:stream/$stream"
+    new_stream="arn:aws:kinesis:eu-central-1:279707217826:stream/$stream"
     yq eval ".spec.parameters.stream = \"$new_stream\"" -i "$temp_yaml_file"
   fi
 fi
