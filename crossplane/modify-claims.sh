@@ -75,6 +75,27 @@ elif [[ " ${CLAIM_TYPES_GOAPP[@]} " =~ " ${kind} " ]]; then
   yq eval ".spec.parameters.vault_id = \"$vault_id\"" -i "$temp_yaml_file"
 fi
 
+if [[ "$kind" == "LykonEventSourceMapping" ]]; then
+  # Get the current stream value
+  stream=$(yq eval '.spec.parameters.stream' "$temp_yaml_file")
+
+  # Modify the stream based on whether it's S3 or Kinesis
+  if [[ "$stream" == s3:* ]]; then
+    # Extract bucket name from the stream and form the S3 ARN
+    bucket_name=$(echo "$stream" | cut -d':' -f2)
+    new_stream="arn:aws:s3:::$bucket_name"
+    yq eval ".spec.parameters.stream = \"$new_stream\"" -i "$temp_yaml_file"
+  elif [[ "$stream" == kinesis:* ]]; then
+    # Extract stream name from the stream and form the Kinesis ARN
+    stream_name=$(echo "$stream" | cut -d':' -f2)
+    new_stream="arn:aws:kinesis:279707217826:stream/$stream_name"
+    yq eval ".spec.parameters.stream = \"$new_stream\"" -i "$temp_yaml_file"
+  else
+    echo "Error: Unsupported stream format: $stream"
+    exit 1
+  fi
+fi
+
 # Convert the final YAML to JSON for Terraform
 manifest=$(yq eval -o=json "$temp_yaml_file")
 jq -n --arg manifest "$manifest" '{ manifest: $manifest }'
