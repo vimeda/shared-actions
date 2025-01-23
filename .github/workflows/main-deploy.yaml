@@ -51,8 +51,8 @@ jobs:
       id: aws
       uses: aws-actions/configure-aws-credentials@v2
       with:
-        role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ inputs.role_name }}
-        role-session-name: ${{ inputs.role_session_name }}
+        role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-kubernetes-role
+        role-session-name: ga-kubernetes
         aws-region: ${{ inputs.aws_region }}
 
     - name: Create Parameters file
