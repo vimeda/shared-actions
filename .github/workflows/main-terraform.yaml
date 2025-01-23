@@ -63,5 +63,5 @@ jobs:
         run: terraform apply -auto-approve -input=false -var-file=staging.tfvars.json
         timeout-minutes: 15
         env:
-          TF_WORKSPACE: staging
+          TF_WORKSPACE: stg
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
