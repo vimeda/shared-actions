@@ -49,8 +49,8 @@ jobs:
         name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-${{ inputs.service_name }}-role
-          role-session-name: ga-${{ inputs.service_name }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-kubernetes-role
+          role-session-name: ga-kubernetes
           aws-region: eu-central-1
       -
         name: Install Terraform
