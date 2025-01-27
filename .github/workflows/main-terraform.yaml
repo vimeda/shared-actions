@@ -15,9 +15,8 @@ on:
         required: true
         type: string
       terraform_workspace:
-        required: false
+        required: true
         type: string
-        default: stg
 
 permissions:
   id-token: write
