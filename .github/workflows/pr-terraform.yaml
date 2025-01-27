@@ -14,6 +14,10 @@ on:
       working_directory:
         required: true
         type: string
+      terraform_workspace:
+        required: true
+        type: string
+
 
 permissions:
   id-token: write
@@ -74,9 +78,9 @@ jobs:
 
       - name: Terraform Staging Plan
         id: plan-staging
-        run: terraform plan -no-color -var-file=staging.tfvars.json
+        run: terraform plan -no-color -var-file=${{ inputs.terraform_workspace }}.tfvars.json
         env:
-          TF_WORKSPACE: staging
+          TF_WORKSPACE: ${{ inputs.terraform_workspace }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Terraform Prod Plan
