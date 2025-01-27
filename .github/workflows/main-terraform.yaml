@@ -14,6 +14,10 @@ on:
       working_directory:
         required: true
         type: string
+      terraform_workspace:
+        required: false
+        type: string
+        default: stg
 
 permissions:
   id-token: write
@@ -63,5 +67,5 @@ jobs:
         run: terraform apply -auto-approve -input=false -var-file=staging.tfvars.json
         timeout-minutes: 15
         env:
-          TF_WORKSPACE: stg
+          TF_WORKSPACE: ${{ inputs.terraform_workspace }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
