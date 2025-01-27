@@ -76,7 +76,7 @@ jobs:
         id: plan-staging
         run: terraform plan -no-color -var-file=staging.tfvars.json
         env:
-          TF_WORKSPACE: staging
+          TF_WORKSPACE: stg
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Terraform Prod Plan
