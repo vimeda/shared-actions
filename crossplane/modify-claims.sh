@@ -90,6 +90,7 @@ if [[ "$kind" == "XLykonLambdaDockerImage" || "$kind" == "XEventSourceMapping" ]
     stream_name=$(echo "$stream" | cut -d':' -f2)
     new_stream="arn:aws:kinesis:eu-central-1:279707217826:stream/$stream_name"
     yq eval ".spec.parameters.stream = \"$new_stream\"" -i "$temp_yaml_file"
+  fi
 fi
 
 # Convert the final YAML to JSON for Terraform
