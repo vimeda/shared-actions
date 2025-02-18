@@ -1,0 +1,130 @@
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      service_name:
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+  statuses: write
+
+jobs:
+  crossplane-terraform:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      -
+        name: Checkout shared-actions
+        uses: actions/checkout@v4
+        with:
+          repository: vimeda/shared-actions
+          path: ./scripts
+          ref: feature/shared-crossplane
+      -
+        name: Checkout service
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          path: ./scripts/${{ inputs.service_name }}
+      -
+        name: Install yq
+        uses: chrisdickinson/setup-yq@v1.0.1
+        with:
+          yq-version: v4.25.3
+      -
+        name: Install 1Password CLI
+        uses: 1password/install-cli-action@v1
+      -
+        name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-${{ inputs.service_name }}-role
+          role-session-name: ga-${{ inputs.service_name }}
+          aws-region: eu-central-1
+      -
+        name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ~1.9
+
+      #build lambdas zip or lambda docker images
+
+      - name: Build lambdas
+        if: ${{inputs.run_zip_lambda_workflow_step == true}}
+        run: cd  ${{ github.workspace }} &&  make lambda
+        env:
+          GITHUB_TOKEN: ${{ secrets.GB_TOKEN_PRIVATE }}
+          GOPRIVATE: "github.com/vimeda/*"
+
+      - name: Upload Build Artifacts
+        if: ${{inputs.run_zip_lambda_workflow_step == true}}
+        uses: actions/upload-artifact@v4
+        with:
+          name: srv-lambdas
+          path: ${{ github.workspace }}/dist/*
+
+      - uses: actions/download-artifact@v4
+        id: download
+        if: ${{inputs.run_zip_lambda_workflow_step == true}}
+        with:
+          name: srv-lambdas
+          path: ${{ github.workspace }}/dist
+
+      - name: Display structure of downloaded files
+        if: ${{env.run_zip_lambda_workflow_step == true}}
+        run: ls -R
+        working-directory: ${{ steps.download.outputs.download-path }}
+        env:
+          run_zip_lambda_workflow_step: ${{ inputs.run_zip_lambda_workflow_step }}
+
+      - name: Push all functions to Bucket
+        if: ${{env.run_zip_lambda_workflow_step == true}}
+        run: |
+          cd ${{ github.workspace }}/dist && ls
+          for file in "./"/*lambda.zip
+          do
+            filename=$(basename "$file" .zip)
+            function_name=${filename%_lambda}
+            aws s3 cp "$file" "s3://${{inputs.env}}-lykon-lambdas/${{ github.event.repository.name}}/$function_name.zip"
+          done
+        env:
+          run_zip_lambda_workflow_step: ${{ inputs.run_zip_lambda_workflow_step }}
+
+      #apply terraform
+
+      -
+        name: Terraform Init
+        working-directory: ./scripts/crossplane
+        run: |
+          terraform init \
+            -backend-config="region=eu-central-1" \
+            -backend-config="bucket=terraform-eks" \
+            -backend-config="key=crossplane/${{ inputs.environment }}/${{ inputs.service_name }}"
+
+      -
+        name: Terraform Validate
+        working-directory: ./scripts/crossplane
+        run: |
+          terraform validate -no-color
+      -
+        name: Terraform
+        working-directory: ./scripts/crossplane
+        run: |
+          echo "${{ secrets.PROD_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
+          export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
+          terraform apply -auto-approve -no-color \
+          -var-file=${{ inputs.environment }}.tfvars \
+          -var="commit_hash=${{ github.sha }}" \
+          -var="service_name=${{ inputs.service_name }}"
+        env:
+          TF_WORKSPACE: ${{ inputs.environment }}
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.PROD_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
+
+
