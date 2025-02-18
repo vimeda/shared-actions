@@ -45,7 +45,7 @@ jobs:
         name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-${{ inputs.service_name }}-role
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-global-role
           role-session-name: ga-${{ inputs.service_name }}
           aws-region: eu-central-1
       -
@@ -126,5 +126,3 @@ jobs:
         env:
           TF_WORKSPACE: ${{ inputs.environment }}
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.PROD_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
-
-
