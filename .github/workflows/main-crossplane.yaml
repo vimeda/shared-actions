@@ -69,7 +69,7 @@ jobs:
           path: ${{ github.workspace }}/dist/*
           zip_lambda_workflow_step: ${{ inputs.zip_lambda_workflow_step }}
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         id: download
         if: ${{env.zip_lambda_workflow_step == true}} ||  ${{env.zip_lambda_workflow_step == 'true' }}
         with:
