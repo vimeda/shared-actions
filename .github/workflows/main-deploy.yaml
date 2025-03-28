@@ -44,7 +44,7 @@ jobs:
       with:
         node-version: '14'
 
-    - uses: azure/setup-kubectl@v3
+    - uses: azure/setup-kubectl@v4
       id: install
 
     - name: Configure AWS Credentials
