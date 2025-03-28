@@ -93,7 +93,8 @@ jobs:
       - name: copy scripts to scripts folder in working directory
         run: |
           mkdir ./scripts && ls
-          cp -r ${{ github.workspace }}/scripts/.github/workflows ./scripts
+          ls -R 
+          cp -r ${{ github.workspace }}/.github/workflows/scripts ./scripts
         shell: sh
 
       - name: Install 1Password Cli, patch claim
