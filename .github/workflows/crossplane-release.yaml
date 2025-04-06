@@ -45,7 +45,7 @@ jobs:
         name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-${{ inputs.service_name }}-role
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-kubernetes-role
           role-session-name: ga-${{ inputs.service_name }}
           aws-region: eu-central-1
       -
@@ -114,10 +114,28 @@ jobs:
         run: |
           terraform validate -no-color
       -
-        name: Terraform
+        name: Verify Kubeconfig
         working-directory: ./scripts/crossplane
         run: |
-          echo "${{ secrets.PROD_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
+          if [ -z "$KUBECONFIG" ]; then
+            echo "Error: KUBECONFIG environment variable is not set"
+            exit 1
+          fi
+          
+          # Test if we can connect to the cluster using the kubeconfig directly
+          if ! echo "$KUBECONFIG" | base64 -d | kubectl --kubeconfig=/dev/stdin cluster-info; then
+            echo "Error: Unable to connect to Kubernetes cluster"
+            exit 1
+          fi
+          
+          echo "Kubeconfig verification successful"
+        env:
+          KUBECONFIG: ${{ secrets.PRD_KUBECONFIG }}
+
+      - name: Terraform
+        working-directory: ./scripts/crossplane
+        run: |
+          echo "${{ secrets.PRD_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
           terraform apply -auto-approve -no-color \
           -var-file=${{ inputs.environment }}.tfvars \
