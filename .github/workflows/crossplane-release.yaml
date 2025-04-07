@@ -149,6 +149,8 @@ jobs:
           cat > provider.tf << EOF
           provider "kubectl" {
             config_path = "${{ github.workspace }}/kubeconfig.yaml"
+            apply_retry_count      = 5
+            load_config_file       = false
           }
           EOF
           

@@ -23,8 +23,3 @@ terraform {
   }
 }
 
-provider "kubectl" {
-  apply_retry_count      = 5
-  load_config_file       = false
-}
-
