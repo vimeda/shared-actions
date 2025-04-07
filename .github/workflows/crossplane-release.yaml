@@ -145,6 +145,13 @@ jobs:
           # Verify kubectl can connect to the cluster
           kubectl cluster-info
           
+          # Create provider configuration file
+          cat > provider.tf << EOF
+          provider "kubectl" {
+            config_path = "${{ github.workspace }}/kubeconfig.yaml"
+          }
+          EOF
+          
           # Run terraform apply
           terraform apply -auto-approve -no-color \
             -var-file=${{ inputs.environment }}.tfvars \
