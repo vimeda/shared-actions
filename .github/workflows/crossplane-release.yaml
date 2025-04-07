@@ -150,7 +150,7 @@ jobs:
           provider "kubectl" {
             config_path = "${{ github.workspace }}/kubeconfig.yaml"
             apply_retry_count      = 5
-            load_config_file       = false
+            load_config_file       = true
           }
           EOF
           
