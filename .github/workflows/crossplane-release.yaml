@@ -153,8 +153,6 @@ jobs:
         env:
           TF_WORKSPACE: ${{ inputs.environment }}
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.PROD_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: eu-central-1
+          AWS_DEFAULT_REGION: eu-central-1
 
 
