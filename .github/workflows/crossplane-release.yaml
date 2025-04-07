@@ -135,14 +135,26 @@ jobs:
       - name: Terraform
         working-directory: ./scripts/crossplane
         run: |
-          echo "${{ secrets.PRD_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
+          # Create and decode kubeconfig
+          echo "${{ secrets.PRD_KUBECONFIG }}" | base64 -d > ${{ github.workspace }}/kubeconfig.yaml
+          chmod 600 ${{ github.workspace }}/kubeconfig.yaml
+          
+          # Set KUBECONFIG environment variable
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
+          
+          # Verify kubectl can connect to the cluster
+          kubectl cluster-info
+          
+          # Run terraform apply
           terraform apply -auto-approve -no-color \
-          -var-file=${{ inputs.environment }}.tfvars \
-          -var="commit_hash=${{ github.sha }}" \
-          -var="service_name=${{ inputs.service_name }}"
+            -var-file=${{ inputs.environment }}.tfvars \
+            -var="commit_hash=${{ github.sha }}" \
+            -var="service_name=${{ inputs.service_name }}"
         env:
           TF_WORKSPACE: ${{ inputs.environment }}
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.PROD_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: eu-central-1
 
 
