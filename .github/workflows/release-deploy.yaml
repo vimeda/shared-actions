@@ -78,4 +78,4 @@ jobs:
         release: ${{ inputs.release_name }}
         namespace: ${{ inputs.namespace }}
       env:
-        KUBECONFIG_FILE: ${{ secrets.PRD_KUBECONFIG }}
+        KUBECONFIG_FILE: ${{ secrets.PROD_KUBECONFIG }}
