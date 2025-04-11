@@ -10,6 +10,12 @@ on:
       run_zip_lambda_workflow_step:
         type: boolean
         default:  false
+      role_name:
+        type: string
+        default: 'github-actions-kubernetes-role'
+      role_session_name:
+        type: string
+        default: 'ga-kubernetes'
 
 
 permissions:
@@ -49,8 +55,8 @@ jobs:
         name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-kubernetes-role
-          role-session-name: ga-kubernetes
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ inputs.role_name }}
+          role-session-name: ${{ inputs.role_session_name }}
           aws-region: eu-central-1
       -
         name: Install Terraform
@@ -130,5 +136,3 @@ jobs:
         env:
           TF_WORKSPACE: ${{ inputs.environment }}
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
-
-
