@@ -45,7 +45,7 @@ jobs:
         name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-global-role
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-kubernetes-role
           role-session-name: ga-${{ inputs.service_name }}
           aws-region: eu-central-1
       -
@@ -114,15 +114,54 @@ jobs:
         run: |
           terraform validate -no-color
       -
-        name: Terraform
+        name: Verify Kubeconfig
         working-directory: ./scripts/crossplane
         run: |
-          echo "${{ secrets.PRD_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
+          if [ -z "$KUBECONFIG" ]; then
+            echo "Error: KUBECONFIG environment variable is not set"
+            exit 1
+          fi
+          
+          # Test if we can connect to the cluster using the kubeconfig directly
+          if ! echo "$KUBECONFIG" | base64 -d | kubectl --kubeconfig=/dev/stdin cluster-info; then
+            echo "Error: Unable to connect to Kubernetes cluster"
+            exit 1
+          fi
+          
+          echo "Kubeconfig verification successful"
+        env:
+          KUBECONFIG: ${{ secrets.PRD_KUBECONFIG }}
+
+      - name: Terraform
+        working-directory: ./scripts/crossplane
+        run: |
+          # Create and decode kubeconfig
+          echo "${{ secrets.PRD_KUBECONFIG }}" | base64 -d > ${{ github.workspace }}/kubeconfig.yaml
+          chmod 600 ${{ github.workspace }}/kubeconfig.yaml
+          
+          # Set KUBECONFIG environment variable
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
+          
+          # Verify kubectl can connect to the cluster
+          kubectl cluster-info
+          
+          # Create provider configuration file
+          cat > provider.tf << EOF
+          provider "kubectl" {
+            config_path = "${{ github.workspace }}/kubeconfig.yaml"
+            apply_retry_count      = 5
+            load_config_file       = true
+          }
+          EOF
+          
+          # Run terraform apply
           terraform apply -auto-approve -no-color \
-          -var-file=${{ inputs.environment }}.tfvars \
-          -var="commit_hash=${{ github.sha }}" \
-          -var="service_name=${{ inputs.service_name }}"
+            -var-file=${{ inputs.environment }}.tfvars \
+            -var="commit_hash=${{ github.sha }}" \
+            -var="service_name=${{ inputs.service_name }}"
         env:
           TF_WORKSPACE: ${{ inputs.environment }}
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.PROD_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
+          AWS_DEFAULT_REGION: eu-central-1
+
+
