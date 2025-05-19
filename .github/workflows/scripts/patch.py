@@ -25,9 +25,13 @@ def process_file(filename):
         github_repository = os.environ.get('GITHUB_REPOSITORY')
         repo_name = github_repository.split('/')[1]
         vault_id = os.environ.get('VAULT_ID')
+        github_deployment_id = os.environ.get('GITHUB_DEPLOYMENT_ID')
+
 
         print(f"This is the vault ID {vault_id}")
         print(f"This is the repo name {repo_name}")
+        print(f"This is the GitHub deployment ID {github_deployment_id}")
+
 
         # Command to get JSON from the provided command
         command = 'op items get ' + repo_name + ' --vault=' + vault_id + ' --format=json | jq ".fields | map({(.label): .value}) | {\"envVariables\": {\"variables\": .}}"'
@@ -48,6 +52,14 @@ def process_file(filename):
 
         # Assuming there is only one 'kind: xLambda or XLambdaDockerImage' document, take the first one
         xlambda_document = xlambda_documents[0]
+
+        # Add or update the meta section with the GitHub deployment ID
+        if github_deployment_id:
+            if 'meta' not in xlambda_document or xlambda_document['meta'] is None:
+                xlambda_document['meta'] = {}
+            xlambda_document['meta']['githubDeploymentId'] = github_deployment_id
+
+
 
         # Merge the parsed JSON with the existing YAML for the 'kind: xLambda or XLambdaDockerImage' document
         parsed_json = json.loads(json_output)
