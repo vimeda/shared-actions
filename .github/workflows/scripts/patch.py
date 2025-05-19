@@ -53,11 +53,11 @@ def process_file(filename):
         # Assuming there is only one 'kind: xLambda or XLambdaDockerImage' document, take the first one
         xlambda_document = xlambda_documents[0]
 
-        # Add or update the meta section with the GitHub deployment ID
+        # Add or update the metadata section with the GitHub deployment ID
         if github_deployment_id:
-            if 'meta' not in xlambda_document or xlambda_document['meta'] is None:
-                xlambda_document['meta'] = {}
-            xlambda_document['meta']['githubDeploymentId'] = github_deployment_id
+            if 'metadata' not in xlambda_document or xlambda_document['metadata'] is None:
+                xlambda_document['metadata'] = {}
+            xlambda_document['metadata']['githubDeploymentId'] = github_deployment_id
 
 
 
