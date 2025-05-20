@@ -1,0 +1,61 @@
+name: Create Deployment
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      ref:
+        required: true
+        type: string
+      description:
+        type: string
+        default: "Deployment triggered via CI"
+    outputs:
+      deployment_id:
+        description: "The GitHub deployment ID"
+        value: ${{ jobs.create.outputs.deployment_id }}
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  create:
+    runs-on: ubuntu-latest
+    outputs:
+      deployment_id: ${{ steps.create.outputs.deployment_id }}
+    steps:
+      - name: Create Deployment
+        id: create
+        run: |
+          api_url="https://api.github.com/repos/${{ github.repository }}/deployments"
+          payload=$(jq -n \
+            --arg ref "${{ inputs.ref }}" \
+            --arg env "${{ inputs.environment }}" \
+            --arg desc "${{ inputs.description }}" \
+            '{
+              ref: $ref,
+              environment: $env,
+              auto_merge: false,
+              required_contexts: [],
+              description: $desc,
+              transient_environment: false,
+              production_environment: false
+            }')
+
+          response=$(curl -s -X POST "$api_url" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            -d "$payload")
+
+          echo "API response: $response"
+          id=$(echo "$response" | jq -r .id)
+
+          if [ "$id" == "null" ]; then
+            echo "Failed to create deployment"
+            exit 1
+          fi
+
+          echo "deployment_id=$id" >> $GITHUB_OUTPUT
