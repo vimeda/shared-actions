@@ -16,7 +16,8 @@ on:
       role_session_name:
         type: string
         default: 'ga-kubernetes'
-
+      deployment_id:
+        type: string
 
 permissions:
   id-token: write
@@ -138,3 +139,29 @@ jobs:
         env:
           TF_WORKSPACE: ${{ inputs.environment }}
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
+      - name: Report Deployment Status - success
+        if: success()
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${{ github.repository }}/deployments/${{ inputs.deployment_id }}/statuses \
+            -d '{"state":"success"}'
+
+      - name: Report Deployment Status - failure
+        if: failure()
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${{ github.repository }}/deployments/${{ inputs.deployment_id }}/statuses \
+            -d '{"state":"failure"}'
+  
+  
+  
+  
+  
+  
+  
+  
+  
