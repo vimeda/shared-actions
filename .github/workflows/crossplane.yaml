@@ -28,6 +28,8 @@ jobs:
   crossplane-terraform:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    environment:
+      name: ${{ inputs.environment }}
 
     steps:
       -
