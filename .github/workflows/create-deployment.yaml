@@ -12,10 +12,10 @@ on:
       description:
         type: string
         default: "Deployment triggered via CI"
-    outputs:
-      deployment_id:
-        description: "The GitHub deployment ID"
-        value: ${{ jobs.create.outputs.deployment_id }}
+    outputs:            
+        deployment_id:
+            description: "ID of the GitHub Deployment"
+            value: ${{ jobs.create.outputs.deployment_id }}
 
 permissions:
   contents: read
