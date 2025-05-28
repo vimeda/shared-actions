@@ -30,7 +30,7 @@ on:
         type: boolean
         default: false
       docker_context_path:
-        required: true
+        required: false
         type: string
         default: .
 
