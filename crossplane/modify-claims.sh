@@ -45,6 +45,8 @@ add_vpc_config() {
 github_deployment_id=$(echo "$GITHUB_DEPLOYMENT_ID")
 if [[ -n "$github_deployment_id" ]]; then
   yq eval ".spec.parameters.envVariables += [{\"variables\": {\"github_deployment_id\": \"$github_deployment_id\"}}]" -i "$temp_yaml_file"
+  # Add GitHub deployment ID as annotation 
+  yq eval ".metadata.annotations[\"github.com/deployment-id\"] = \"$github_deployment_id\"" -i "$temp_yaml_file"
 fi
 
 if [[ " ${CLAIM_TYPES_LAMBDA[@]} " =~ " ${kind} " ]]; then
