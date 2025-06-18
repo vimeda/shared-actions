@@ -6,13 +6,10 @@ set -euov pipefail
 mkdir -p tmp/
 
 # Extract variables using jq
-eval "$(jq -r '@sh "ENV=\(.env) VAULT_ID=\(.vault_id) CLAIM_YAML=\(.claim_yaml) GITHUB_DEPLOYMENT_ID=\(.github_deployment_id)"')"
+eval "$(jq -r '@sh "ENV=\(.env) VAULT_ID=\(.vault_id) CLAIM_YAML=\(.claim_yaml)"')"
 
-# Use environment variable if available, otherwise keep the one from JSON
-if [[ -n "${GITHUB_DEPLOYMENT_ID_ENV:-}" ]]; then
-  echo "Using deployment ID from environment: $GITHUB_DEPLOYMENT_ID_ENV"
-  GITHUB_DEPLOYMENT_ID="$GITHUB_DEPLOYMENT_ID_ENV"
-fi
+# Use environment variable for deployment ID
+GITHUB_DEPLOYMENT_ID="${GITHUB_DEPLOYMENT_ID_ENV}"
 
 # Generate a SHA256 hash from CLAIM_YAML and use part of it for the file name
 hash=$(echo -n "$CLAIM_YAML" | sha256sum | cut -d' ' -f1)
