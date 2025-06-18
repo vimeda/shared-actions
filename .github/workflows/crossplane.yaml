@@ -9,16 +9,18 @@ on:
         type: string
       run_zip_lambda_workflow_step:
         type: boolean
-        default:  false
+        default: false
       role_name:
         type: string
-        default: 'github-actions-kubernetes-role'
+        default: "github-actions-kubernetes-role"
       role_session_name:
         type: string
-        default: 'ga-kubernetes'
+        default: "ga-kubernetes"
       deployment_id:
         required: true
         type: string
+  repository_dispatch:
+    types: [crossplane-deploy]
 
 permissions:
   id-token: write
@@ -35,36 +37,30 @@ jobs:
       name: ${{ inputs.environment }}
 
     steps:
-      -
-        name: Checkout shared-actions
+      - name: Checkout shared-actions
         uses: actions/checkout@v4
         with:
           repository: vimeda/shared-actions
           path: ./scripts
           ref: feature/shared-crossplane
-      -
-        name: Checkout service
+      - name: Checkout service
         uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
           path: ./scripts/${{ inputs.service_name }}
-      -
-        name: Install yq
+      - name: Install yq
         uses: chrisdickinson/setup-yq@v1.0.1
         with:
           yq-version: v4.25.3
-      -
-        name: Install 1Password CLI
+      - name: Install 1Password CLI
         uses: 1password/install-cli-action@v1
-      -
-        name: Configure AWS Credentials
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ inputs.role_name }}
           role-session-name: ${{ inputs.role_session_name }}
           aws-region: eu-central-1
-      -
-        name: Install Terraform
+      - name: Install Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ~1.9
@@ -110,12 +106,11 @@ jobs:
             aws s3 cp "$file" "s3://${{inputs.env}}-lykon-lambdas/${{ github.event.repository.name}}/$function_name.zip"
           done
         env:
-            run_zip_lambda_workflow_step: ${{ inputs.run_zip_lambda_workflow_step }}
+          run_zip_lambda_workflow_step: ${{ inputs.run_zip_lambda_workflow_step }}
 
       #apply terraform
 
-      -
-        name: Terraform Init
+      - name: Terraform Init
         working-directory: ./scripts/crossplane
         run: |
           terraform init \
@@ -123,13 +118,11 @@ jobs:
             -backend-config="bucket=terraform-eks" \
             -backend-config="key=crossplane/${{ inputs.environment }}/${{ inputs.service_name }}"
 
-      -
-        name: Terraform Validate
+      - name: Terraform Validate
         working-directory: ./scripts/crossplane
         run: |
           terraform validate -no-color
-      -
-        name: Terraform
+      - name: Terraform
         working-directory: ./scripts/crossplane
         run: |
           echo "${{ secrets.STG_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
@@ -141,28 +134,3 @@ jobs:
         env:
           TF_WORKSPACE: ${{ inputs.environment }}
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
-      - name: Report Deployment Status - success
-        if: success()
-        run: |
-          curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github+json" \
-            https://api.github.com/repos/${{ github.repository }}/deployments/${{ inputs.deployment_id }}/statuses \
-            -d '{"state":"success"}'
-
-      - name: Report Deployment Status - failure
-        if: failure()
-        run: |
-          curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github+json" \
-            https://api.github.com/repos/${{ github.repository }}/deployments/${{ inputs.deployment_id }}/statuses \
-            -d '{"state":"failure"}'
-  
-  
-  
-  
-  
-  
-  
-  
