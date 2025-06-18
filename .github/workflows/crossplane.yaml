@@ -131,6 +131,7 @@ jobs:
           terraform apply -auto-approve -no-color \
           -var-file=${{ inputs.environment }}.tfvars \
           -var="commit_hash=${{ github.sha }}" \
+          -var="github_deployment_id=${{ inputs.deployment_id }}"
           -var="service_name=${{ inputs.service_name }}"
         env:
           TF_WORKSPACE: ${{ inputs.environment }}
