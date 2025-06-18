@@ -11,12 +11,13 @@ data "template_file" "claims" {
 # Use external data source to run the bash script to modify the claims
 data "external" "modified_yaml" {
   for_each = data.template_file.claims
-  program = ["bash", "${path.module}/modify-claims.sh"]
+  program  = ["bash", "${path.module}/modify-claims.sh"]
 
   query = {
-    vault_id   = var.vault_id
-    claim_yaml = each.value.rendered
-    env = terraform.workspace
+    vault_id             = var.vault_id
+    claim_yaml           = each.value.rendered
+    env                  = terraform.workspace
+    github_deployment_id = var.github_deployment_id
   }
 }
 
@@ -27,15 +28,15 @@ output "modified_yaml" {
 # Locals for decoding the updated YAML from the external script output
 locals {
   # Define the path to the directory containing YAML files
-  yaml_dir = "${path.module}/tmp"  # Adjust this to your module's relative path
-  yaml_files = fileset(local.yaml_dir, "*.yaml")  # Get all YAML files in the specified directory
+  yaml_dir   = "${path.module}/tmp"              # Adjust this to your module's relative path
+  yaml_files = fileset(local.yaml_dir, "*.yaml") # Get all YAML files in the specified directory
 }
 
 # Parse the YAML content into Kubernetes documents using kubectl provider
 data "kubectl_file_documents" "claims" {
-  depends_on = [data.external.modified_yaml]  # Ensure this runs after the external data source
-  for_each = data.external.modified_yaml
-  content  = yamlencode(jsondecode(each.value.result.manifest))
+  depends_on = [data.external.modified_yaml] # Ensure this runs after the external data source
+  for_each   = data.external.modified_yaml
+  content    = yamlencode(jsondecode(each.value.result.manifest))
 }
 
 output "kubectl_manifest" {
@@ -53,9 +54,9 @@ locals {
 
 resource "kubectl_manifest" "apply" {
   depends_on = [data.kubectl_file_documents.claims]
-  for_each  = toset(local.manifests_array)
-  yaml_body = each.value  # Apply each manifest from the array
+  for_each   = toset(local.manifests_array)
+  yaml_body  = each.value # Apply each manifest from the array
   lifecycle {
-    create_before_destroy = true  # recreate the resource each time
+    create_before_destroy = true # recreate the resource each time
   }
 }

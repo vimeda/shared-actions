@@ -6,16 +6,7 @@ set -euov pipefail
 mkdir -p tmp/
 
 # Extract variables using jq
-eval "$(jq -r '@sh "ENV=\(.env) VAULT_ID=\(.vault_id) CLAIM_YAML=\(.claim_yaml)"')"
-
-# Check if GITHUB_DEPLOYMENT_ID_ENV is set
-if [[ -z "${GITHUB_DEPLOYMENT_ID_ENV:-}" ]]; then
-  echo "Error: GITHUB_DEPLOYMENT_ID_ENV environment variable is not set"
-  exit 1
-fi
-
-# Use environment variable for deployment ID
-GITHUB_DEPLOYMENT_ID="${GITHUB_DEPLOYMENT_ID_ENV}"
+eval "$(jq -r '@sh "ENV=\(.env) VAULT_ID=\(.vault_id) CLAIM_YAML=\(.claim_yaml) GITHUB_DEPLOYMENT_ID=\(.github_deployment_id)"')"
 
 # Generate a SHA256 hash from CLAIM_YAML and use part of it for the file name
 hash=$(echo -n "$CLAIM_YAML" | sha256sum | cut -d' ' -f1)
@@ -51,12 +42,9 @@ add_vpc_config() {
 }
 
 # Add GitHub deployment ID to the parameters section for all resource kinds
-github_deployment_id=$(echo "$GITHUB_DEPLOYMENT_ID")
-
-# Add deployment ID to parameters and annotations
-yq eval ".spec.parameters.envVariables += [{\"variables\": {\"github_deployment_id\": \"$github_deployment_id\"}}]" -i "$temp_yaml_file"
+yq eval ".spec.parameters.envVariables += [{\"variables\": {\"github_deployment_id\": \"$GITHUB_DEPLOYMENT_ID\"}}]" -i "$temp_yaml_file"
 # Add GitHub deployment ID as annotation 
-yq eval ".metadata.annotations[\"github.com/deployment-id\"] = \"$github_deployment_id\"" -i "$temp_yaml_file"
+yq eval ".metadata.annotations[\"github.com/deployment-id\"] = \"$GITHUB_DEPLOYMENT_ID\"" -i "$temp_yaml_file"
 
 if [[ " ${CLAIM_TYPES_LAMBDA[@]} " =~ " ${kind} " ]]; then
   # Handle XLykonLambda and XLykonLambdaDockerImage
