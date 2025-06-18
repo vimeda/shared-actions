@@ -127,6 +127,7 @@ jobs:
         run: |
           echo "${{ secrets.STG_KUBECONFIG }}" > ${{ github.workspace }}/kubeconfig.yaml
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
+          export GITHUB_DEPLOYMENT_ID_ENV="${{ inputs.deployment_id }}"
           terraform apply -auto-approve -no-color \
           -var-file=${{ inputs.environment }}.tfvars \
           -var="commit_hash=${{ github.sha }}" \
@@ -134,3 +135,4 @@ jobs:
         env:
           TF_WORKSPACE: ${{ inputs.environment }}
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
+          GITHUB_DEPLOYMENT_ID_ENV: ${{ inputs.deployment_id }}
