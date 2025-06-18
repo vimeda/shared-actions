@@ -8,6 +8,12 @@ mkdir -p tmp/
 # Extract variables using jq
 eval "$(jq -r '@sh "ENV=\(.env) VAULT_ID=\(.vault_id) CLAIM_YAML=\(.claim_yaml)"')"
 
+# Check if GITHUB_DEPLOYMENT_ID_ENV is set
+if [[ -z "${GITHUB_DEPLOYMENT_ID_ENV:-}" ]]; then
+  echo "Error: GITHUB_DEPLOYMENT_ID_ENV environment variable is not set"
+  exit 1
+fi
+
 # Use environment variable for deployment ID
 GITHUB_DEPLOYMENT_ID="${GITHUB_DEPLOYMENT_ID_ENV}"
 
