@@ -21,5 +21,6 @@ variable "vault_id" {
 variable "github_deployment_id" {
   description = "GitHub deployment ID for tracking deployments"
   type        = string
+  default     = ""
 }
 

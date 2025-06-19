@@ -1,2 +1,2 @@
 cluster_name = "prd-eks-v2"
-vault_id = "37y43e5v2qd3iptgt7wgyk34ga"
+vault_id     = "37y43e5v2qd3iptgt7wgyk34ga"
