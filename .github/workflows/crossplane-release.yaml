@@ -162,7 +162,7 @@ jobs:
             -var="service_name=${{ inputs.service_name }}"
         env:
           TF_WORKSPACE: ${{ inputs.environment }}
-          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.PROD_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.LYKON_ONEPASSWORD_SERVICE_ACCOUNT }}
           AWS_DEFAULT_REGION: eu-central-1
 
 

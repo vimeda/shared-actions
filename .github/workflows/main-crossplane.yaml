@@ -128,7 +128,7 @@ jobs:
               fi
           done
         env:
-          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.LYKON_ONEPASSWORD_SERVICE_ACCOUNT }}
           VAULT_ID: ${{ secrets.STAGING_ONEPASSWORD_VAULT }}
 
       - name: patch claim image uri with commit hash
