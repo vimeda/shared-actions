@@ -157,6 +157,7 @@ jobs:
           # Run terraform apply
           terraform apply -auto-approve -no-color \
             -var-file=${{ inputs.environment }}.tfvars \
+            -var="vault_id=${{ secrets.LYKON_PROD_ONEPASSWORD_VAULT }}" \
             -var="commit_hash=${{ github.sha }}" \
             -var="service_name=${{ inputs.service_name }}"
         env:
