@@ -115,7 +115,7 @@ jobs:
 
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.PROD_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
-          VAULT_ID: ${{ secrets.PROD_ONEPASSWORD_VAULT }}
+          VAULT_ID: ${{ secrets.LYKON_PROD_ONEPASSWORD_VAULT }}
 
       - name: Terraform apply
         id: apply
