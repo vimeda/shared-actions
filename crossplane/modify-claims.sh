@@ -64,9 +64,9 @@ if [[ " ${CLAIM_TYPES_LAMBDA[@]} " =~ " ${kind} " ]]; then
 elif [[ " ${CLAIM_TYPES_GOAPP[@]} " =~ " ${kind} " ]]; then
   # Handle XLykonGoApp
   if [[ "$ENV" == "staging" ]]; then
-    vault_id="errsir3kqd4gdjgaxliofyskey"
+    vault_id="ueodovtwcjbxlpcxslm4wqrdoe"
   elif [[ "$ENV" == "prod" ]]; then
-    vault_id="37y43e5v2qd3iptgt7wgyk34ga"
+    vault_id="lrkmmcel3akl3fphaltgoxtdvu"
   else
     echo "Error: Unsupported environment $ENV"
     exit 1

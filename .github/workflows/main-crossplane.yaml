@@ -129,7 +129,7 @@ jobs:
           done
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.STAGING_ONEPASSWORD_SERVICEACCOUNT_TOKEN }}
-          VAULT_ID: "errsir3kqd4gdjgaxliofyskey"
+          VAULT_ID: "ueodovtwcjbxlpcxslm4wqrdoe"
 
       - name: patch claim image uri with commit hash
         id: patch_image_uri_with_commit_hash
