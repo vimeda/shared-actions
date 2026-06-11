@@ -68,17 +68,8 @@ if [[ " ${CLAIM_TYPES_LAMBDA[@]} " =~ " ${kind} " ]]; then
   fi
   add_vpc_config "$ENV"  # Add VPC config only for Lambda types
 elif [[ " ${CLAIM_TYPES_GOAPP[@]} " =~ " ${kind} " ]]; then
-  # Handle XLykonGoApp
-  if [[ "$ENV" == "staging" ]]; then
-    vault_id="errsir3kqd4gdjgaxliofyskey"
-  elif [[ "$ENV" == "prod" ]]; then
-    vault_id="37y43e5v2qd3iptgt7wgyk34ga"
-  else
-    echo "Error: Unsupported environment $ENV"
-    exit 1
-  fi
-
-  yq eval ".spec.parameters.vault_id = \"$vault_id\"" -i "$temp_yaml_file"
+  # Handle XLykonGoApp — vault id is provided via $VAULT_ID (env-specific, from terraform var.vault_id)
+  yq eval ".spec.parameters.vault_id = \"$VAULT_ID\"" -i "$temp_yaml_file"
 fi
 
 if [[ "$kind" == "XLykonLambdaDockerImage" || "$kind" == "XEventSourceMapping" ]]; then

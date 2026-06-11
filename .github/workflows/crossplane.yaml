@@ -131,6 +131,7 @@ jobs:
           export KUBECONFIG=${{ github.workspace }}/kubeconfig.yaml
           terraform apply -auto-approve -no-color \
           -var-file=${{ inputs.environment }}.tfvars \
+          -var="vault_id=${{ secrets.STAGING_ONEPASSWORD_VAULT }}" \
           -var="commit_hash=${{ github.sha }}" \
           -var="service_name=${{ inputs.service_name }}"
         env:
